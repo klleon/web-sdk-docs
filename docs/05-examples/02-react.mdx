@@ -1,0 +1,268 @@
+---
+title: React 전체 예제
+sidebar_label: React
+---
+
+# React
+
+## 사전 준비
+
+### 1. SDK 스크립트 추가
+
+`public/index.html` 파일의 `<head>` 태그 내에 SDK 스크립트를 추가합니다.
+
+```html title="public/index.html"
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    {/* ... 기타 메타 태그 및 링크 ... */}
+    <title>React + Klleon Chat SDK</title>
+    {/* TODO: {VERSION}을 실제 SDK 버전으로 변경하세요. (예: 1.2.0) */}
+    <script src="https://web.sdk.klleon.io/{VERSION}/klleon-chat.umd.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+### 2. TypeScript 타입 지원 (선택 사항)
+
+Klleon Chat SDK는 TypeScript 타입 정의를 제공할 수 있습니다. 프로젝트에 해당 타입 정의(.d.ts) 파일이 포함되어 있다면, `window.KlleonChat` 전역 객체 및 SDK 메서드, 웹 컴포넌트 props 등에 대한 타입 추론과 자동 완성을 활용할 수 있습니다.
+
+## React 컴포넌트 예제 (`App.tsx`)
+
+```tsx title="src/App.tsx"
+import React, { useEffect, useRef, useState, CSSProperties } from "react";
+
+// TODO: 실제 SDK 키와 아바타 ID로 변경하세요.
+const SDK_KEY = "YOUR_SDK_KEY";
+const AVATAR_ID = "YOUR_AVATAR_ID";
+
+const styles: { [key: string]: CSSProperties } = {
+  app: { textAlign: "center", padding: "20px" },
+  appHeader: { marginBottom: "30px" },
+  loadingText: { fontSize: "1.5em", color: "#555", padding: "50px" },
+  sdkContainer: {
+    display: "flex",
+    flexDirection: "row",
+    gap: "20px",
+    alignItems: "stretch",
+    maxWidth: "1000px",
+    margin: "0 auto",
+  },
+  avatarWrapper: {
+    flex: 2,
+    minHeight: "500px",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    overflow: "hidden",
+  },
+  avatarContainer: {
+    display: "block",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#f0f0f0",
+  },
+  chatWrapper: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+  },
+  chatContainer: {
+    display: "block",
+    flexGrow: 1,
+    minHeight: "400px",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    backgroundColor: "#fff",
+    padding: "10px",
+    overflowY: "auto",
+  },
+  controls: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    padding: "10px",
+    border: "1px solid #eee",
+    borderRadius: "8px",
+    backgroundColor: "#f9f9f9",
+  },
+  inputGroup: { display: "flex", gap: "10px" },
+  input: {
+    flexGrow: 1,
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    fontSize: "1rem",
+  },
+  button: {
+    padding: "10px 15px",
+    backgroundColor: "#007bff",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "1rem",
+  },
+  buttonHover: { backgroundColor: "#0056b3" },
+};
+
+interface AvatarProps {
+  videoStyle?: CSSProperties;
+  volume?: number;
+}
+
+interface ChatProps {
+  delay?: number;
+  type?: "voice" | "text";
+  isShowCount?: boolean;
+}
+
+function App() {
+  const [message, setMessage] = useState("");
+  const [echoText, setEchoText] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const avatarContainerRef = useRef<HTMLElement & AvatarProps>(null);
+  const chatContainerRef = useRef<HTMLElement & ChatProps>(null);
+
+  useEffect(() => {
+    const initSDK = async () => {
+      if (!window.KlleonChat) {
+        console.error("Klleon Chat SDK not loaded!");
+        setIsLoading(false);
+        return;
+      }
+
+      const KlleonChat = window.KlleonChat;
+      console.log("SDK 로드 확인됨. 초기화를 시도합니다...");
+
+      KlleonChat.onStatusEvent((status: Status) => {
+        console.log(`SDK Status Event: ${status}`);
+        setIsLoading(status !== "VIDEO_CAN_PLAY");
+      });
+
+      KlleonChat.onChatEvent((chatData: ChatData) => {
+        console.log("SDK Chat Event:", chatData);
+      });
+
+      try {
+        await KlleonChat.init({
+          sdk_key: SDK_KEY,
+          avatar_id: AVATAR_ID,
+          logLevel: "info",
+        });
+        console.log("SDK 초기화 성공!");
+      } catch (error) {
+        console.error(`SDK 초기화 실패: ${(error as Error).message || error}`);
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initSDK();
+
+    return () => {
+      console.log("React 컴포넌트 언마운트. SDK 리소스를 정리합니다.");
+      window.KlleonChat.destroy();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (avatarContainerRef.current) {
+      avatarContainerRef.current.videoStyle = {
+        borderRadius: "30px",
+        objectFit: "contain",
+      };
+      avatarContainerRef.current.volume = 100;
+    }
+    if (chatContainerRef.current) {
+      chatContainerRef.current.delay = 10;
+      chatContainerRef.current.type = "text";
+      chatContainerRef.current.isShowCount = true;
+      console.log("chat-container props set via ref.");
+    }
+  }, []);
+
+  const handleSendMessage = () => {
+    window.KlleonChat.sendTextMessage(message.trim());
+    setMessage("");
+  };
+
+  const handleEcho = () => {
+    window.KlleonChat.echo(echoText);
+    setEchoText("");
+  };
+
+  return (
+    <div style={styles.app}>
+      <header style={styles.appHeader}>
+        <h1>Klleon Chat SDK - React 예제</h1>
+      </header>
+      <main>
+        {isLoading && (
+          <p style={styles.loadingText}>Klleon Avatar Loading...</p>
+        )}
+
+        <div style={styles.sdkContainer}>
+          <div style={styles.avatarWrapper}>
+            <avatar-container
+              ref={avatarContainerRef}
+              volume="0.7"
+              style={styles.avatarContainer} // 웹 컴포넌트 자체의 기본 스타일
+            ></avatar-container>
+          </div>
+          <div style={styles.chatWrapper}>
+            <chat-container
+              ref={chatContainerRef}
+              style={styles.chatContainer} // 웹 컴포넌트 자체의 기본 스타일
+            ></chat-container>
+            <div style={styles.controls}>
+              <div style={styles.inputGroup}>
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="메시지 입력..."
+                  style={styles.input}
+                  disabled={isLoading}
+                />
+                <button
+                  onClick={handleSendMessage}
+                  style={styles.button}
+                  disabled={isLoading}
+                >
+                  메시지 전송
+                </button>
+              </div>
+              <div style={styles.inputGroup}>
+                <input
+                  type="text"
+                  value={echoText}
+                  onChange={(e) => setEchoText(e.target.value)}
+                  placeholder="아바타 발화 내용 입력..."
+                  style={styles.input}
+                  disabled={isLoading}
+                />
+                <button
+                  onClick={handleEcho}
+                  style={styles.button}
+                  disabled={isLoading}
+                >
+                  아바타 발화
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default App;
+```

@@ -1,0 +1,280 @@
+---
+sidebar_position: 4
+title: SDK 메서드
+---
+
+import { Table } from "@site/src/components/table/Table";
+import { initOptionColumns, initOptionData } from "@site/src/data/setup";
+
+# SDK 메서드
+
+Klleon Chat SDK는 웹 애플리케이션과의 다양한 상호작용을 위한 메서드들을 제공합니다. SDK 초기화부터 메시지 전송, 아바타 제어까지 주요 기능들을 이 문서에서 안내합니다.
+
+## SDK 라이프사이클
+
+SDK의 생명주기를 올바르게 관리하는 것은 리소스 누수를 방지하고 애플리케이션의 안정성을 확보하는 데 중요합니다.
+
+### `KlleonChat.init(options)`
+
+SDK를 초기화하고 서버와 연결을 준비합니다. 이 메서드는 애플리케이션 로드 시 한 번 호출되어야 합니다.
+
+**초기화 옵션 (`options`):**
+
+<Table columns={initOptionColumns} data={initOptionData} />
+
+:::caution 주의
+`KlleonChat.init()`는 SDK 인스턴스당 한 번만 호출하는 것을 권장합니다. SDK는 내부적으로 중복 초기화를 방지하는 로직을 포함하고 있어 여러 번 호출해도 최초 한 번만 정상적으로 초기화됩니다. 다만, 최적의 성능과 명확한 코드 관리를 위해 `init()`은 애플리케이션 로드 시 한 번만 호출하는 것이 좋습니다.
+:::
+
+### `KlleonChat.destroy()`
+
+SDK가 사용하던 모든 리소스(소켓 연결, WebRTC 연결, 이벤트 리스너 등)를 정리하고 SDK를 완전히 종료합니다.
+
+**사용 예시 (초기화 및 종료 통합):**
+
+```javascript title="app.js (SDK 라이프사이클 관리)"
+// SDK 초기화 (예: 애플리케이션 시작 시)
+document.addEventListener("DOMContentLoaded", () => {
+  try {
+    window.KlleonChat.init({
+      sdk_key: "YOUR_SDK_KEY",
+      avatar_id: "YOUR_AVATAR_ID",
+      // ... 기타 초기화 옵션
+    });
+    console.log("Klleon Chat SDK initialized.");
+  } catch (error) {
+    console.error("SDK Initialization failed:", error);
+  }
+});
+
+// SDK 종료 (예: 사용자가 페이지를 떠나거나 앱을 종료할 때)
+window.addEventListener("beforeunload", () => {
+  try {
+    window.KlleonChat.destroy();
+    console.log("Klleon Chat SDK destroyed.");
+  } catch (error) {
+    console.error("SDK Destruction failed:", error);
+  }
+});
+```
+
+## 메시지 전송
+
+### `KlleonChat.sendTextMessage(message)`
+
+사용자가 입력한 텍스트 메시지를 아바타에게 전송합니다.
+
+- **message** (string, 필수): 아바타에게 전송할 텍스트 메시지입니다.
+
+**사용 예시:**
+
+```javascript
+const messageInput = document.getElementById("message-input");
+const sendButton = document.getElementById("send-button");
+
+sendButton.addEventListener("click", () => {
+  const text = messageInput.value.trim();
+  if (text) {
+    window.KlleonChat.sendTextMessage(text);
+    messageInput.value = "";
+  }
+});
+```
+
+## 음성 입력 (STT: Speech-to-Text)
+
+사용자의 음성을 텍스트로 변환하여 아바타에게 전달하는 기능입니다. `startStt()`로 음성 입력을 시작하고, `endStt()`로 입력을 마치고 전송합니다.
+
+:::info 마이크 권한
+음성 대화 기능을 사용하려면 브라우저에서 마이크 사용 권한이 필요합니다. `init()` 시 `enable_microphone: true` (기본값)로 설정하면 SDK가 마이크 연결을 시도합니다.
+:::
+
+### `KlleonChat.startStt()` / `KlleonChat.endStt()`
+
+- **`KlleonChat.startStt()`**: 마이크를 통해 음성 데이터 수집을 시작합니다.
+- **`KlleonChat.endStt()`**: 진행 중인 음성 데이터 수집을 중단하고, 수집된 음성을 텍스트로 변환하여 아바타에게 메시지로 전송합니다.
+
+**사용 예시 (하나의 버튼으로 시작/종료 토글):**
+
+```javascript
+const recordButton = document.getElementById("record-button"); // <button id="record-button">녹음 시작</button>
+let isRecording = false;
+
+recordButton.addEventListener("click", () => {
+  if (!isRecording) {
+    try {
+      window.KlleonChat.startStt();
+      recordButton.textContent = "녹음 중지 및 전송";
+      isRecording = true;
+      console.log("음성 인식 시작됨.");
+    } catch (error) {
+      console.error("음성 인식 시작 실패:", error);
+    }
+  } else {
+    try {
+      window.KlleonChat.endStt();
+      recordButton.textContent = "녹음 시작";
+      isRecording = false;
+      console.log("음성 인식 종료 및 전송 요청됨.");
+    } catch (error) {
+      console.error("음성 인식 종료/전송 실패:", error);
+    }
+  }
+});
+```
+
+## 아바타 발화 제어
+
+### `KlleonChat.cancelStt()`
+
+진행 중인 음성 입력(`startStt()` 호출 후 상태)을 취소합니다. 취소된 음성 데이터는 아바타에게 전송되지 않으며, 다시 음성 입력을 시작할 수 있는 상태가 됩니다. 사용자가 음성 입력 도중 내용을 취소하고 싶을 때 사용합니다.
+
+**사용 예시:**
+
+```javascript
+const cancelRecordButton = document.getElementById("cancel-record-button");
+
+cancelRecordButton.addEventListener("click", () => {
+  try {
+    window.KlleonChat.cancelStt();
+    console.log("음성 입력이 취소되었습니다.");
+    // isRecording = false; // STT 시작/종료 예제의 isRecording 상태도 업데이트 필요
+    // recordButton.textContent = "녹음 시작";
+  } catch (error) {
+    console.error("음성 입력 취소 실패:", error);
+  }
+});
+```
+
+### `KlleonChat.stopSpeech()`
+
+현재 아바타가 말하고 있는 음성(TTS) 출력을 즉시 중단시킵니다.
+
+**사용 예시:**
+
+```javascript
+const stopSpeakingButton = document.getElementById("stop-speaking-button");
+
+stopSpeakingButton.addEventListener("click", () => {
+  try {
+    window.KlleonChat.stopSpeech();
+    console.log("아바타 발화 중단 요청됨.");
+  } catch (error) {
+    console.error("아바타 발화 중단 실패:", error);
+  }
+});
+```
+
+## 에코 기능
+
+### `KlleonChat.echo(message)`
+
+제공된 `message` 문자열을 아바타가 그대로 발화(TTS)하도록 요청합니다.
+
+- **message** (string, 필수): 아바타가 발화할 문자열 메시지입니다.
+
+**사용 예시:**
+
+```javascript
+const echoTextInput = document.getElementById("echo-text");
+const sendEchoButton = document.getElementById("send-echo-button");
+
+sendEchoButton.addEventListener("click", () => {
+  const textToEcho = echoTextInput.value;
+  if (textToEcho) {
+    window.KlleonChat.echo(textToEcho);
+  }
+});
+```
+
+### `KlleonChat.startAudioEcho(audio)` / `KlleonChat.endAudioEcho()`
+
+- **`KlleonChat.startAudioEcho(audio)`**: Base64로 인코딩된 `audio` 문자열 데이터를 서버로 전송하여 오디오 에코 기능을 시작합니다. 이 메서드 호출 후, SDK는 계속해서 오디오를 녹음하는 상태로 간주될 수 있으며, `endAudioEcho()`를 호출하여 명시적으로 종료해야 합니다.
+  - `audio` (string, 필수): Base64로 인코딩된 오디오 데이터 문자열. (0.1MB 제한, 유효한 Base64)
+- **`KlleonChat.endAudioEcho()`**: 진행 중인 오디오 에코 기능을 종료합니다.
+
+**사용 예시:**
+
+```javascript
+const base64AudioInput = document.getElementById("base64-audio-input"); // <textarea id="base64-audio-input"></textarea>
+const startAudioEchoButton = document.getElementById("start-audio-echo");
+const endAudioEchoButton = document.getElementById("end-audio-echo");
+
+startAudioEchoButton.addEventListener("click", () => {
+  const audioData = base64AudioInput.value.trim();
+  if (audioData) {
+    try {
+      window.KlleonChat.startAudioEcho(audioData);
+      console.log("오디오 에코 시작됨.");
+      // UI 업데이트: 에코 중 상태 표시
+    } catch (error) {
+      console.error("오디오 에코 시작 실패:", error);
+    }
+  }
+});
+
+endAudioEchoButton.addEventListener("click", () => {
+  try {
+    window.KlleonChat.endAudioEcho();
+    console.log("오디오 에코 종료됨.");
+    // UI 업데이트: 에코 중지 상태 표시
+  } catch (error) {
+    console.error("오디오 에코 종료 실패:", error);
+  }
+});
+```
+
+## 아바타 변경
+
+### `KlleonChat.changeAvatar(option)`
+
+현재 SDK 세션을 종료하고, 지정된 `option`으로 새로운 아바타와 새 세션을 시작합니다.
+
+- **option** (object, 필수): 아바타 변경에 필요한 옵션 객체입니다.
+  - `avatar_id` (string, 필수): 변경할 새 아바타의 고유 ID입니다.
+  - `subtitle_code` (string, 선택): 자막 언어 코드 (예: "ko_kr", "en_us"). 기본값: "ko_kr".
+  - `voice_code` (string, 선택): 음성 언어 코드 (예: "ko_kr", "en_us"). 기본값: "ko_kr".
+  - `voice_tts_speech_speed` (number, 선택): TTS 음성 속도 (0.5 ~ 2.0). 기본값: 1.0.
+
+**사용 예시:**
+
+```javascript
+async function switchToNewAvatar(newAvatarId) {
+  const options = {
+    avatar_id: newAvatarId,
+    subtitle_code: "en_us",
+    voice_code: "en_us",
+    voice_tts_speech_speed: 1.2,
+  };
+  try {
+    await window.KlleonChat.changeAvatar(options);
+    console.log(`Avatar changed to ${newAvatarId}. New session started.`);
+  } catch (error) {
+    console.error("Avatar change failed:", error);
+  }
+}
+
+// switchToNewAvatar("다른_아바타_ID_입력");
+```
+
+## 메시지 목록 관리 (UI 연동)
+
+### `KlleonChat.clearMessageList()`
+
+SDK 내부의 메시지 목록 상태를 비웁니다. 주로 `<chat-container>`와 같은 SDK 제공 UI 웹 컴포넌트와 함께 사용할 때, 해당 컴포넌트에 표시된 메시지들을 화면에서 지우는 데 사용됩니다. 이 메서드는 대화의 기억(로그)을 서버에서 삭제하는 것이 아니라, 클라이언트 측 UI 표시용 메시지 배열을 초기화합니다.
+
+**사용 예시:**
+
+```javascript
+const clearChatButton = document.getElementById("clear-chat-button");
+
+clearChatButton.addEventListener("click", () => {
+  window.KlleonChat.clearMessageList();
+  console.log("채팅 UI의 메시지 목록이 초기화되었습니다.");
+});
+```
+
+```
+
+이 제안대로 `docs/usage/sdk-methods.mdx` 파일을 구성하면 될까요? 특히 `init` 옵션 테이블을 위한 데이터 파일(`src/data/setup/getting-started.js` 또는 새 파일 `src/data/usage/sdk-methods.js`)이 정확히 준비되어야 테이블이 올바르게 표시됩니다. 현재는 `getting-started`의 것을 임시로 참조하도록 해두었습니다.
+```

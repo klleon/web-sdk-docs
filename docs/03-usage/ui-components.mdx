@@ -1,0 +1,141 @@
+---
+sidebar_position: 3
+title: UI 컴포넌트 사용하기
+---
+
+import { Table } from "@site/src/components/table/Table";
+import {
+  avatarContainerPropsColumns,
+  avatarContainerPropsData,
+  chatContainerPropsColumns,
+  chatContainerPropsData,
+} from "@site/src/data/usage";
+
+# UI 컴포넌트 사용하기
+
+Klleon Chat SDK는 아바타 영상과 채팅 인터페이스를 위한 `<avatar-container />`와 `<chat-container />` 웹 컴포넌트를 제공합니다. 이 컴포넌트들은 HTML 태그처럼 사용하며, 속성(Props)을 통해 동작을 제어하고 CSS로 스타일을 적용할 수 있습니다.
+
+## `<avatar-container />`
+
+아바타의 실시간 스트리밍 영상이 표시되는 컨테이너입니다.
+
+**기본 사용법 및 주요 속성:**
+
+```html
+<avatar-container
+  style="width: 400px; height: 600px; border: 1px solid #eee;"
+  video-style='{"borderRadius": "24px", "objectFit": "cover"}'
+  volume="100"
+></avatar-container>
+```
+
+- `style`: 컴포넌트 자체의 CSS 스타일을 지정합니다.
+- 다른 사용 가능한 속성은 아래 표를 참고하세요.
+
+**속성 (Props):**
+
+<Table columns={avatarContainerPropsColumns} data={avatarContainerPropsData} />
+
+## `<chat-container />`
+
+사용자와 아바타 간의 대화 내용 표시 및 메시지 입력을 위한 채팅 인터페이스를 제공합니다.
+
+**기본 사용법 및 주요 속성:**
+
+```html
+<chat-container
+  type="text"
+  style="width: 400px; height: 600px; border: 1px solid #eee; border-radius: 8px;"
+  delay="50"
+  is-show-count="true" {/* HTML attribute는 kebab-case */}
+></chat-container>
+```
+
+- `style`: 컴포넌트 자체의 CSS 스타일을 지정합니다.
+- 다른 사용 가능한 속성은 아래 표를 참고하세요.
+
+**속성 (Props):**
+
+<Table columns={chatContainerPropsColumns} data={chatContainerPropsData} />
+
+:::tip 컴포넌트 속성(Props) 사용 규칙
+HTML에서 웹 컴포넌트의 속성을 설정할 때는 일반적으로 `kebab-case` (예: `video-style`, `is-show-count`)를 사용합니다. 예를 들어, `isShowCount` 프로퍼티는 HTML에서 `is-show-count="true"` 또는 `is-show-count="false"`와 같이 설정합니다.
+
+JavaScript로 해당 프로퍼티에 직접 접근하거나 설정할 때는 `camelCase` (예: `element.videoStyle`, `element.isShowCount`)를 사용합니다.
+
+Boolean 타입 속성의 경우, HTML에서 속성 이름을 명시하는 것만으로 `true`로 간주될 수 있습니다 (예: `is-show-count` 만 작성). 명시적으로 `false` 값을 전달하려면 `is-show-count="false"`와 같이 문자열로 설정해야 합니다. 이는 LitElement 기반 웹 컴포넌트의 표준 동작을 따릅니다.
+:::
+
+## UI 컴포넌트 통합 예시
+
+다음은 `<avatar-container />`와 `<chat-container />`를 함께 배치하여 일반적인 채팅 애플리케이션 레이아웃을 구성하는 예시입니다.
+
+```html title="index.html (UI 컴포넌트 배치 예시)"
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Klleon Chat UI</title>
+    {/* {VERSION}을 실제 SDK 버전으로 변경하세요. */}
+    <script src="https://web.sdk.klleon.io/{VERSION}/klleon-chat.umd.js"></script>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: sans-serif;
+        background-color: #f4f4f4;
+      }
+      .chat-app-wrapper {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      avatar-container {
+        width: 350px;
+        height: 550px;
+        border-radius: 8px;
+        background-color: #e0e0e0;
+      }
+      chat-container {
+        width: 350px;
+        height: 550px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-app-wrapper">
+      <avatar-container
+        volume="80"
+        video-style='{"objectFit": "cover"}'
+      ></avatar-container>
+      <chat-container
+        type="voice"
+        delay="50"
+        is-show-count="false"
+      ></chat-container>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        if (window.KlleonChat) {
+          window.KlleonChat.init({
+            sdk_key: "YOUR_SDK_KEY", // 실제 SDK 키로 변경
+            avatar_id: "YOUR_AVATAR_ID", // 실제 아바타 ID로 변경
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
+```
+
+:::tip SDK 초기화 정보
+위 통합 예제에서 SDK 초기화에 필요한 `{VERSION}`, `YOUR_SDK_KEY`, `YOUR_AVATAR_ID`는 실제 유효한 값으로 대체해야 합니다. SDK 설치 및 초기화에 대한 자세한 내용은 [시작하기](../setup/getting-started.mdx) 문서를 참고하세요.
+:::
