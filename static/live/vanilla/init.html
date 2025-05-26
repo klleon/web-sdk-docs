@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KlleonChat SDK Vanilla Init Example</title>
+    <script src="https://web.sdk.klleon.io/1.2.0/klleon-chat.umd.js"></script>
+    <style>
+      html {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
+      html::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
+      body {
+        margin: 0; /* 기본 body 마진 제거 */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      id="session-timer"
+      style="
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 10;
+        color: orangered;
+      "
+    ></div>
+    <button id="start-chat" style="width: 120px; height: 40px">
+      start Chat
+    </button>
+    <div
+      id="sdk-container"
+      style="
+        display: flex;
+        gap: 0px 10px;
+        width: 100%;
+        height: 800px;
+        opacity: 0;
+      "
+    >
+      <avatar-container
+        style="flex: 1"
+        volume="100"
+        videoStyle='{"borderRadius": "24px"}'
+      ></avatar-container>
+      <chat-container
+        style="flex: 1; border-radius: 24px"
+        delay="30"
+        type="text"
+        isShowCount="true"
+      ></chat-container>
+    </div>
+
+    <script>
+      let sessionTimeoutId = null;
+      let countdownIntervalId = null;
+
+      function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${
+          remainingSeconds < 10 ? "0" : ""
+        }${remainingSeconds}`;
+      }
+
+      function startSessionTimer(durationInSeconds) {
+        const timerElement = document.getElementById("session-timer");
+
+        const sdkContainer = document.querySelector("#sdk-container");
+        const startChatButton = document.querySelector("#start-chat");
+        if (!timerElement) return;
+
+        timerElement.style.display = "block";
+        let timeLeft = durationInSeconds;
+
+        if (countdownIntervalId) clearInterval(countdownIntervalId);
+        if (sessionTimeoutId) clearTimeout(sessionTimeoutId);
+
+        timerElement.textContent = formatTime(timeLeft);
+
+        countdownIntervalId = setInterval(() => {
+          timeLeft--;
+          timerElement.textContent = formatTime(timeLeft);
+          if (timeLeft <= 0) {
+            clearInterval(countdownIntervalId);
+          }
+        }, 1000);
+
+        sessionTimeoutId = setTimeout(() => {
+          window.KlleonChat.destroy();
+
+          if (timerElement) timerElement.style.display = "none";
+          if (countdownIntervalId) clearInterval(countdownIntervalId);
+
+          timerElement.style.display = "none";
+
+          sdkContainer.style.opacity = 0;
+          sdkContainer.style.height = "0px";
+
+          startChatButton.style.display = "block";
+          startChatButton.textContent = "start Chat";
+          startChatButton.disabled = false;
+        }, durationInSeconds * 1000);
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        if (!window.KlleonChat) {
+          console.error(
+            "Klleon Chat SDK가 로드되지 않았습니다. HTML의 script 태그를 확인하세요."
+          );
+          return;
+        }
+
+        window.addEventListener("beforeunload", () => {
+          if (sessionTimeoutId) {
+            clearTimeout(sessionTimeoutId);
+          }
+          if (countdownIntervalId) {
+            clearInterval(countdownIntervalId);
+          }
+          window.KlleonChat.destroy();
+        });
+      });
+
+      document
+        .querySelector("#start-chat")
+        .addEventListener("click", async () => {
+          console.log("SDK 로드 확인됨. 초기화를 시도합니다...");
+
+          const sdkContainer = document.querySelector("#sdk-container");
+          const startChatButton = document.querySelector("#start-chat");
+
+          try {
+            window.KlleonChat.onStatusEvent((status) => {
+              console.log(`SDK Status Event: ${status}`);
+              if (status === "VIDEO_CAN_PLAY") {
+                sdkContainer.style.opacity = 1;
+                sdkContainer.style.height = "800px";
+                startChatButton.style.display = "none";
+                if (sessionTimeoutId) {
+                  clearTimeout(sessionTimeoutId);
+                }
+                startSessionTimer(10);
+                // startSessionTimer(180);
+              } else {
+                startChatButton.textContent = "loading...";
+                startChatButton.disabled = true;
+              }
+            });
+
+            window.KlleonChat.onChatEvent((chatData) => {});
+
+            await window.KlleonChat.init({
+              sdk_key: "APP-vN4Mh9vmHqtPbTDbDhCp",
+              avatar_id: "b626e1d5-444c-11ef-b707-0a8637d613d3",
+            });
+            console.log("SDK 초기화 성공!");
+          } catch (error) {
+            console.error(`SDK 초기화 실패: ${error.message || error}`);
+          }
+        });
+    </script>
+  </body>
+</html>

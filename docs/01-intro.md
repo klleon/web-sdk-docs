@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 title: 소개
+sidebar_label: intro
 ---
 
 # Klleon Chat SDK 소개

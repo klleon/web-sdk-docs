@@ -23,6 +23,13 @@ const config: Config = {
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
+  scripts: [
+    {
+      src: "https://web.sdk.klleon.io/1.2.0/klleon-chat.umd.js",
+      async: true,
+    },
+  ],
+
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
@@ -64,6 +71,8 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
+
+  plugins: ["@docusaurus/theme-live-codeblock"],
 
   themeConfig: {
     // Replace with your project's social card
@@ -135,6 +144,14 @@ const config: Config = {
     prism: {
       theme: prismThemes.dracula,
       darkTheme: prismThemes.dracula,
+    },
+    liveCodeBlock: {
+      playgroundPosition: "bottom",
+    },
+    colorMode: {
+      defaultMode: "light",
+      disableSwitch: true, // 🔴 사용자 테마 전환 스위치 제거
+      respectPrefersColorScheme: false, // 🔴 OS 다크 모드 무시
     },
   } satisfies Preset.ThemeConfig,
 };

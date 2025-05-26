@@ -5,9 +5,7 @@ sidebar_label: 시작하기
 ---
 
 import Table from "@site/src/components/table/Table";
-// initOptionColumns, initOptionData의 실제 데이터 파일 경로를 확인해주세요.
-// 예시: import { initOptionColumns, initOptionData } from "@site/src/data/setup/gettingStartedData";
-// 우선은 @site/src/data/setup 로 가정하고 아래 코드를 작성합니다.
+import InitPage from "@site/src/components/example/InitPage";
 import { initOptionColumns, initOptionData } from "@site/src/data/setup";
 
 # 시작하기
@@ -42,7 +40,8 @@ HTML 파일의 `<head>` 태그에 다음 스크립트 태그를 추가하세요.
     <script src="https://web.sdk.klleon.io/{VERSION}/klleon-chat.umd.js"></script>
   </head>
   <body>
-    {/* 애플리케이션 콘텐츠 */}
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
 ```
@@ -58,39 +57,48 @@ SDK 스크립트가 로드된 후, `window.KlleonChat.init()` 메서드를 호�
 
 가장 기본적인 초기화에는 `sdk_key`와 `avatar_id` 두 가지 옵션이 필수로 요구됩니다. (이벤트 리스너 등록 후 `init`을 호출하는 것을 권장합니다.)
 
-```javascript title="main.js 또는 HTML 내 <script> 태그 (초기화 예시)"
-// DOM이 로드된 후 SDK 관련 로직 실행
-document.addEventListener("DOMContentLoaded", async () => {
-  if (window.KlleonChat) {
-    // 1. Status 이벤트 리스너 등록
-    window.KlleonChat.onStatusEvent((status) => {
-      console.log("SDK Status Event:", status);
-      // 상세한 Status 값과 의미는 '이벤트 처리' 문서를 참고하세요.
-      if (status === "VIDEO_CAN_PLAY") {
-        console.log("아바타 영상 재생 준비 완료!");
-      }
-    });
+```tsx title="App.tsx (SDK Init)"
+import { useEffect } from "react";
 
-    // 2. Chat 이벤트 리스너 등록
-    window.KlleonChat.onChatEvent((chatData) => {
-      console.log("SDK Chat Event:", chatData);
-      // 상세한 ChatData 구조와 chat_type은 '이벤트 처리' 문서를 참고하세요.
-    });
+function App() {
+  useEffect(() => {
+    const { KlleonChat } = window;
 
-    // 3. SDK 초기화
-    try {
-      await window.KlleonChat.init({
-        sdk_key: "YOUR_SDK_KEY", // 발급받은 SDK 키로 교체하세요.
-        avatar_id: "YOUR_AVATAR_ID", // 사용할 아바타 ID로 교체하세요.
+    const init = async () => {
+      // 1. Status 이벤트 리스너 등록
+      KlleonChat.onStatusEvent((status) => {
+        // 상세한 Status 값과 의미는 'usage > 이벤트 처리' 문서를 참고하세요.
+        if (status === "VIDEO_CAN_PLAY") {
+          console.log("아바타 영상 재생 준비 완료!");
+        }
       });
-      console.log("Klleon Chat SDK 초기화 시도 완료.");
-    } catch (error) {
-      console.error("Klleon Chat SDK 초기화 실패:", error);
-    }
-  } else {
-    console.error("Klleon Chat SDK가 로드되지 않았습니다.");
-  }
-});
+
+      // 2. Chat 이벤트 리스너 등록
+      KlleonChat.onChatEvent((chatData) => {
+        // 상세한 ChatData 구조와 chat_type은 'usage > 이벤트 처리' 문서를 참고하세요.
+        console.log("SDK Chat Event:", chatData);
+      });
+
+      // 3. SDK 초기화
+      await KlleonChat.init({
+        sdk_key: "YOUR_SDK_KEY",
+        avatar_id: "YOUR_AVATAR_ID",
+        // custom_id: "YOUR_CUSTOM_ID",
+        // user_key: "YOUR_USER_KEY",
+        // voice_code: "ko_kr",
+        // subtitle_code: "ko_kr",
+        // voice_tts_speech_speed: 1,
+        // enable_microphone: true,
+        // log_level: "debug",
+      });
+    };
+    init();
+  }, []);
+
+  return <></>;
+}
+
+export default App;
 ```
 
 ### 초기화 옵션 (`InitOption`)
@@ -107,108 +115,121 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 ## 바로 따라하기: 전체 예제
 
-다음은 Klleon Chat SDK를 웹 페이지에 설치하고, 이벤트를 등록하며, 초기화하는 가장 기본적인 전체 HTML 예제입니다. 이 코드를 `index.html` 파일로 저장하고 웹 브라우저에서 열어보세요. (실제 동작을 위해서는 `YOUR_SDK_KEY`와 `YOUR_AVATAR_ID`를 유효한 값으로 변경해야 합니다.)
+다음은 Klleon Chat SDK를 웹 페이지에 설치하고, 이벤트를 등록하며, 초기화하는 가장 기본적인 예제입니다.  
+예시 환경은 VITE + React + TailwindCSS 입니다.  
+(실제 동작을 위해서는 `YOUR_SDK_KEY`와 `YOUR_AVATAR_ID`를 유효한 값으로 변경해야 합니다.)
 
-```html title="index.html (전체 예제)"
+```html title="index.html"
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Klleon Chat SDK 시작하기</title>
-    {/* 1. Klleon Chat SDK 스크립트 추가 ({VERSION}을 실제 버전으로 변경) */}
-    <script src="https://web.sdk.klleon.io/{VERSION}/klleon-chat.umd.js"></script>
+    <title>Vite + React + TS + TailwindCSS</title>
+    <script src="https://web.sdk.klleon.io/1.0.0/klleon-chat.umd.js"></script>
   </head>
   <body>
-    <h1>Klleon Chat SDK 데모</h1>
-
-    <div class="container">
-      <avatar-container
-        class="avatar-container"
-        volume="100"
-        videoStyle='{"borderRadius": "24px"}'
-      ></avatar-container>
-      <chat-container
-        delay="30"
-        type="text"
-        isShowCount="true"
-        class="chat-container"
-      ></chat-container>
-    </div>
-
-    {/* 간단한 UI 레이아웃을 위한 스타일 */}
-    <style>
-      body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-family: sans-serif;
-        padding: 20px;
-        margin: 0;
-      }
-      .container {
-        display: flex;
-        width: 800px;
-        max-width: 100%;
-        height: 600px;
-        gap: 20px;
-        margin-top: 20px;
-        border: 1px solid #ddd;
-        padding: 10px;
-        box-sizing: border-box;
-      }
-      .avatar-container {
-        flex: 1;
-        border: 1px solid #ccc;
-        background-color: #f0f0f0;
-      }
-      .chat-container {
-        flex: 1;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-      }
-    </style>
-
-    <script>
-      // 3. SDK 초기화 및 이벤트 리스너 등록
-      document.addEventListener("DOMContentLoaded", async () => {
-        if (window.KlleonChat) {
-          console.log("Klleon Chat SDK 로드 확인됨.");
-
-          // Status 이벤트 리스너 등록
-          window.KlleonChat.onStatusEvent((status) => {
-            console.log("Status Event Received:", status);
-            // 상세한 Status 값과 의미는 '이벤트 처리' 문서를 참고하세요.
-            if (status === "VIDEO_CAN_PLAY") {
-              console.log(
-                ">>> 아바타 영상 재생 준비 완료! SDK 메서드 사용 가능 상태입니다."
-              );
-            }
-          });
-          console.log("onStatusEvent 리스너 등록됨.");
-
-          // Chat 이벤트 리스너 등록
-          window.KlleonChat.onChatEvent((chatData) => {
-            console.log("Chat Event Received:", chatData);
-            // 상세한 ChatData 구조와 chat_type은 '이벤트 처리' 문서를 참고하세요.
-          });
-          console.log("onChatEvent 리스너 등록됨.");
-
-          // SDK 초기화
-          try {
-            await window.KlleonChat.init({
-              sdk_key: "YOUR_SDK_KEY", // 실제 SDK 키로 변경하세요.
-              avatar_id: "YOUR_AVATAR_ID", // 실제 아바타 ID로 변경하세요.
-            });
-            console.log("KlleonChat.init() 호출 완료.");
-          } catch (error) {
-            console.error("Klleon Chat SDK 초기화 중 오류 발생:", error);
-          }
-        } else {
-          console.error("Klleon Chat SDK가 로드되지 않았습니다.");
-        }
-      });
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
 ```
+
+```tsx title="App.tsx"
+import { useEffect, useRef, type CSSProperties } from "react";
+
+interface AvatarProps {
+  videoStyle?: CSSProperties;
+  volume?: number;
+}
+
+interface ChatProps {
+  delay?: number;
+  type?: "voice" | "text";
+  isShowCount?: boolean;
+}
+
+function App() {
+  const avatarRef = useRef<HTMLElement & AvatarProps>(null);
+  const chatRef = useRef<HTMLElement & ChatProps>(null);
+
+  useEffect(() => {
+    const { KlleonChat } = window;
+
+    const init = async () => {
+      // 1. Status 이벤트 리스너 등록
+      KlleonChat.onStatusEvent((status) => {
+        // 상세한 Status 값과 의미는 'usage > 이벤트 처리' 문서를 참고하세요.
+        if (status === "VIDEO_CAN_PLAY") {
+          console.log("아바타 영상 재생 준비 완료!");
+        }
+      });
+
+      // 2. Chat 이벤트 리스너 등록
+      KlleonChat.onChatEvent((chatData) => {
+        // 상세한 ChatData 구조와 chat_type은 'usage > 이벤트 처리' 문서를 참고하세요.
+        console.log("SDK Chat Event:", chatData);
+      });
+
+      // 3. SDK 초기화
+      await KlleonChat.init({
+        sdk_key: "YOUR_SDK_KEY",
+        avatar_id: "YOUR_AVATAR_ID",
+        // custom_id: "YOUR_CUSTOM_ID",
+        // user_key: "YOUR_USER_KEY",
+        // voice_code: "ko_kr",
+        // subtitle_code: "ko_kr",
+        // voice_tts_speech_speed: 1,
+        // enable_microphone: true,
+        // log_level: "debug",
+      });
+    };
+    init();
+
+    if (avatarRef.current) {
+      avatarRef.current.videoStyle = {
+        borderRadius: "30px",
+        objectFit: "cover",
+      };
+      avatarRef.current.volume = 100;
+    }
+
+    if (chatRef.current) {
+      chatRef.current.delay = 30;
+      chatRef.current.type = "text";
+      chatRef.current.isShowCount = true;
+    }
+
+    return () => {
+      KlleonChat.destroy();
+    };
+  }, []);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        width: "600px",
+        height: "720px",
+        gap: "0px 24px",
+      }}
+    >
+      <avatar-container
+        ref={avatarRef}
+        style={{ flex: 1 }}
+        class=""
+      ></avatar-container>
+      <chat-container
+        ref={chatRef}
+        style={{ flex: 1 }}
+        class="rounded-3xl"
+      ></chat-container>
+    </div>
+  );
+}
+
+export default App;
+```
+
+<InitPage />
