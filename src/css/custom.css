@@ -28,3 +28,77 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.custom-chat-page {
+  width: 100%;
+  height: 100%;
+  .header {
+    margin-bottom: 30px;
+  }
+  .loading-text {
+    position: absolute;
+    font-size: 1.5em;
+    color: #555;
+    padding: 50px;
+  }
+  .start-chat-button {
+    width: 150px;
+    height: 50px;
+    background-color: #0c5ef0;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+  }
+  .sdk-container {
+    display: flex;
+    width: 100%;
+    height: 720px;
+    gap: 0px 24px;
+    .avatar-container {
+      flex: 1;
+    }
+    .chat-control-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 24px 0px;
+      .chat-container {
+        flex: 1;
+        border-radius: 24px;
+      }
+      .chat-echo-container {
+        display: flex;
+        flex-direction: column;
+        .echo-input {
+          width: 100%;
+          height: 40px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          padding: 0 10px;
+          font-size: 16px;
+          margin-bottom: 10px;
+        }
+        .echo-button {
+          width: 100%;
+          height: 40px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          padding: 0 10px;
+          background-color: #0c5ef0;
+          color: #fff;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          &:disabled {
+            background-color: #ccc;
+            color: #fff;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+}

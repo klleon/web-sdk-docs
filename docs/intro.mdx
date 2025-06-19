@@ -1,4 +1,5 @@
 ---
+id: intro
 sidebar_position: 1
 title: 소개
 sidebar_label: intro
@@ -15,7 +16,6 @@ Klleon Chat SDK는 웹 애플리케이션에 클레온의 실시간 인터랙티
 - **커스터마이징 가능한 UI**: 기본으로 제공되는 아바타 및 채팅 UI 컴포넌트를 사용하거나, 필요에 따라 직접 UI를 구성하여 브랜드 아이덴티티에 맞출 수 있습니다.
 - **다양한 SDK 이벤트 구독**: SDK의 상태 변경 및 채팅 관련 주요 이벤트들을 구독하여 애플리케이션 로직에 맞게 활용할 수 있습니다.
 - **TypeScript 타입 정의 제공**: `.d.ts` 타입 정의 파일을 제공하여, TypeScript 프로젝트에서 Klleon Chat SDK 사용 시 개발 편의성과 타입 안정성을 향상시킵니다.
-- **다양한 초기화 옵션**: 아바타의 언어, 음성 속도, 로그 레벨 등 다양한 옵션을 Klleon Chat SDK 초기화 시점에 설정하여 SDK 동작을 세밀하게 제어할 수 있습니다.
 
 ## 이 문서는 누구를 위한 것인가요?
 
@@ -26,3 +26,34 @@ Klleon Chat SDK는 웹 애플리케이션에 클레온의 실시간 인터랙티
 - **모든 사용자**: Klleon Chat SDK가 무엇이며, 어떻게 활용될 수 있는지 궁금한 모든 분들.
 
 이 문서를 통해 Klleon Chat SDK의 설치부터 고급 활용법까지 배우고, SDK를 활용하여 아바타 경험을 서비스에 적용해 보세요.
+
+## 주요 통신 구조
+
+```mermaid
+%%{init: {"themeVariables": {"primaryColor": "#0C5EF0", "actorBorder":"#0C5EF0", "actorBkg":"#e3f2fd"}} }%%
+sequenceDiagram
+    participant Client as 사용자(웹/앱)
+    participant Backend as Klleon 서버
+    participant Engine as 실시간 처리 엔진
+
+    Note over Client: Klleon Chat SDK 주요 통신 구조
+
+    Client->>Backend: 인증 및 대화 세션 요청
+    Backend->>Engine: 세션 생성 및 연결
+    Engine-->>Backend: 세션 연결 완료
+    Backend-->>Client: 세션 정보 전달
+
+    rect rgb(227,242,253)
+    loop 대화/음성 세션
+        Client->>Backend: 메시지/음성 데이터 전송
+        Backend->>Engine: 데이터 중계
+        Engine-->>Backend: 처리 결과(텍스트/음성)
+        Backend-->>Client: 결과 전달
+    end
+    end
+
+    Client->>Backend: 세션 종료 요청
+    Backend->>Engine: 세션 종료
+    Engine-->>Backend: 종료 확인
+    Backend-->>Client: 세션 종료 완료
+```

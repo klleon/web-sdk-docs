@@ -1,4 +1,5 @@
 ---
+id: sdk-event
 sidebar_position: 5
 title: 이벤트 처리
 sidebar_label: 이벤트 처리
@@ -7,16 +8,7 @@ sidebar_label: 이벤트 처리
 import { Table } from "@site/src/components/table/Table";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import {
-  chatDataColumns,
-  chatDataRows,
-  statusEventArgumentColumns,
-  statusEventArgumentRows,
-  statusPossibleValuesColumns,
-  statusPossibleValuesData,
-  responseChatTypeValuesColumns,
-  responseChatTypeValuesData,
-} from "@site/src/data/usage";
+import { usage } from "@site/src/data/usage";
 
 # 이벤트 처리
 
@@ -24,15 +16,11 @@ Klleon Chat SDK는 실시간으로 발생하는 다양한 상태 변화와 데�
 
 ## 이벤트 리스너 등록 및 관리
 
-SDK는 두 가지 주요 이벤트 스트림을 제공합니다: `Chat` 이벤트와 `Status` 이벤트.
-
 ### `KlleonChat.onChatEvent(callback)`
 
 아바타 또는 사용자와 관련된 채팅 메시지 발생 시 호출되는 콜백 함수를 등록합니다. 이 이벤트를 활용하면 SDK에서 제공하는 `<chat-container>` UI 컴포넌트를 사용하지 않고도, 수신되는 `ChatData`를 기반으로 애플리케이션에 맞는 자체적인 채팅 인터페이스를 구현할 수 있습니다.
 
 - **callback** (`(data: ChatData) => void`, 필수): `ChatData` 객체를 인자로 받는 콜백 함수입니다.
-
-**사용 예시:**
 
 ```javascript
 function handleChatMessage(chatData) {
@@ -47,25 +35,82 @@ window.KlleonChat.onChatEvent(handleChatMessage);
 <Tabs groupId="chat-data-details">
   <TabItem value="chatdata" label="ChatData 객체 속성">
     `onChatEvent` 콜백을 통해 전달되는 `ChatData` 객체의 속성은 다음과 같습니다.
-    <Table columns={chatDataColumns} data={chatDataRows} />
+    <Table columns={usage.ko.chatDataColumns} data={usage.ko.chatDataRows} />
   </TabItem>
   <TabItem value="responsetype" label="ResponseChatType 값 상세">
     `ChatData` 객체의 `chat_type` 속성에 올 수 있는 값들과 그 의미는 다음과
     같습니다. (`BaseResponseChatType` 참고)
     <Table
-      columns={responseChatTypeValuesColumns}
-      data={responseChatTypeValuesData}
+      columns={usage.ko.responseChatTypeValuesColumns}
+      data={usage.ko.responseChatTypeValuesData}
     />
   </TabItem>
 </Tabs>
+
+### ChatData Flow
+
+#### 텍스트 메시지 전송
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant SDK as KlleonChat SDK
+    participant Avatar as Avatar
+
+    Note over U,Avatar: 텍스트 메시지 전송 시나리오
+
+    U->>SDK: sendTextMessage("안녕하세요")
+    SDK->>Avatar: 메시지 전송
+    Avatar->>SDK: PREPARING_RESPONSE
+    SDK->>U: onChatEvent({"chat_type": "PREPARING_RESPONSE"})
+
+    Avatar->>SDK: TEXT (메시지 1)
+    SDK->>U: onChatEvent({"chat_type": "TEXT", "message": "안녕하세요"})
+
+    Avatar->>SDK: TEXT (메시지 2)
+    SDK->>U: onChatEvent({"chat_type": "TEXT", "message": "오늘도 좋은 하루 되세요."})
+
+    Avatar->>SDK: RESPONSE_IS_ENDED
+    SDK->>U: onChatEvent({"chat_type": "RESPONSE_IS_ENDED"})
+```
+
+#### 음성 메시지 전송
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant SDK as KlleonChat SDK
+    participant Avatar as Avatar
+
+    Note over U,Avatar: 음성 메시지 전송 시나리오
+
+    U->>SDK: startStt()
+    U->>SDK: 음성 데이터 스트리밍
+    U->>SDK: endStt()
+    SDK->>Avatar: STT 결과 전송
+    Avatar->>SDK: PREPARING_RESPONSE
+    SDK->>U: onChatEvent({"chat_type": "PREPARING_RESPONSE"})
+
+    SDK->>U: onChatEvent({"chat_type": "STT_RESULT", "message": "안녕하세요"})
+
+    Avatar->>SDK: TEXT
+    SDK->>U: onChatEvent({"chat_type": "TEXT", "message": "안녕하세요, 오늘도 좋은 하루 되세요."})
+
+    Avatar->>SDK: RESPONSE_IS_ENDED
+    SDK->>U: onChatEvent({"chat_type": "RESPONSE_IS_ENDED"})
+```
+
+:::tip
+`onChatEvent`를 통해 SDK의 기본 `<chat-container>`를 사용하지 않고, 실제로 애플리케이션에 맞는 커스텀 채팅창을 자유롭게 구축할 수 있습니다.
+:::
+
+---
 
 ### `KlleonChat.onStatusEvent(callback)`
 
 SDK 및 아바타의 주요 상태 변경 시 호출되는 콜백 함수를 등록합니다.
 
 - **callback** (`(status: Status) => void`, 필수): 현재 SDK 또는 아바타의 상태를 나타내는 `Status` 문자열을 인자로 받는 콜백 함수입니다.
-
-**사용 예시:**
 
 ```javascript
 function handleSdkStatus(currentStatus) {
@@ -75,11 +120,6 @@ function handleSdkStatus(currentStatus) {
     console.log(
       "아바타 영상 재생 준비 완료! 이제 다른 SDK 메서드를 사용할 수 있습니다."
     );
-    // 예: 메시지 입력 UI 활성화
-    // document.getElementById('message-input').disabled = false;
-  } else if (currentStatus.startsWith("ERROR_")) {
-    // 예시: 오류 상태 처리
-    console.error("SDK 오류 발생:", currentStatus);
   }
 }
 
@@ -94,15 +134,39 @@ window.KlleonChat.onStatusEvent(handleSdkStatus);
 
 #### `Status` 이벤트 인자 상세
 
-`onStatusEvent` 콜백을 통해 전달되는 인자는 다음과 같습니다.
-
-<Table columns={statusEventArgumentColumns} data={statusEventArgumentRows} />
+<Table
+  columns={usage.ko.statusEventArgumentColumns}
+  data={usage.ko.statusEventArgumentRows}
+/>
 
 #### `Status` 값 상세
 
-`onStatusEvent` 콜백을 통해 전달되는 `Status` 문자열의 주요 값들과 그 의미는 다음과 같습니다. (`BaseStatus` 타입 참고)
+<Table
+  columns={usage.ko.statusPossibleValuesColumns}
+  data={usage.ko.statusPossibleValuesData}
+/>
 
-<Table columns={statusPossibleValuesColumns} data={statusPossibleValuesData} />
+#### Status 이벤트 흐름
+
+```mermaid
+flowchart TD
+    INIT["KlleonChat.init() 호출"] --> A[IDLE]
+    A --> B[CONNECTING]
+    B -->|실패| C[CONNECTING_FAILED]
+    B -->|성공| D[SOCKET_CONNECTED]
+    D -->|실패| I[SOCKET_FAILED]
+    D -->|성공| E[STREAMING_CONNECTED]
+    E -->|실패| J[STREAMING_FAILED]
+    E -->|성공| F[VIDEO_LOAD]
+    F --> G[VIDEO_CAN_PLAY]
+
+    %% 스타일 지정
+    classDef success fill:#d3f9d8,stroke:#3adb76,stroke-width:2px,color:#000;
+    classDef failure fill:#ffe3e3,stroke:#ff6b6b,stroke-width:2px,color:#000;
+
+    class D,E,F,G success;
+    class C,I,J failure;
+```
 
 :::info 콜백 재등록
 `onChatEvent` 또는 `onStatusEvent`를 동일한 이벤트 타입에 대해 여러 번 호출하면, 마지막으로 등록된 콜백 함수만 활성화됩니다. 즉, 새 콜백을 등록하면 이전 콜백은 자동으로 해제됩니다. 명시적인 `off` 메서드는 제공되지 않습니다.
