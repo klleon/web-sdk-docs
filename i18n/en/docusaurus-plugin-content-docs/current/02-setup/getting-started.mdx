@@ -1,0 +1,222 @@
+---
+
+id: getting-started
+sidebar_position: 2
+title: Getting Started
+sidebar_label: Getting Started
+
+---
+
+import Table from "@site/src/components/table/Table";
+import SetUpExample from "@site/src/components/example/SetUpExample";
+import { setup } from "@site/src/data/setup";
+import Head from "@docusaurus/Head";
+
+<Head>
+  <title>{`Getting Started with Klleon Chat SDK - Installation, Initialization, React Integration Example`}</title>
+  <meta
+    name="description"
+    content="Step-by-step guide to install Klleon Chat SDK and integrate avatar chat into your web application. Includes domain setup, SDK key issuance, script integration, and a working React example."
+  />
+  <meta
+    name="keywords"
+    content="Klleon Chat SDK, Digital Human Setup, Avatar Chat SDK, Web Avatar Integration, JavaScript AI SDK, React Avatar Example, LLM Integration, TTS Speech Synthesis, Lip Sync, SDK Initialization, Klleon SDK, Vite React Integration, Chatbot SDK"
+  />
+</Head>
+
+# Getting Started
+
+Integrating the Klleon Chat SDK into your web application is simple. This guide walks you through the prerequisites, installation steps, and the basic initialization process.
+
+## Prerequisites
+
+Before you begin, ensure the following:
+
+1. **Klleon Studio Account**: You'll need a [Klleon Studio](https://www.studio.klleon.io/) account. If you don’t have one, please register first.
+2. **Register Your Domain**: Add your web app's [domain](https://www.studio.klleon.io/sdk) to Klleon Studio.
+
+   - Login and navigate to the "SDK Management" menu.
+   - For assistance, contact `partnership@klleon.io`.
+
+3. **Get Your SDK Key**: Once your domain is registered, you’ll receive a unique `sdk_key` required for initialization.
+4. **Avatar ID**: Each avatar has a unique `avatar_id`. Only avatars with copyable IDs on the [avatar list](https://www.studio.klleon.io/avatar) can be used with the SDK.
+
+## Installing the SDK
+
+You can install the Klleon Chat SDK by adding a `<script>` tag to your HTML file:
+
+```html title="index.html (Install SDK)"
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Klleon Chat SDK Getting Started</title>
+    <!-- Insert SDK script (replace {VERSION} with actual version) -->
+    <script src="https://web.sdk.klleon.io/{VERSION}/klleon-chat.umd.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+\:::tip SDK Version
+Replace `{VERSION}` with the actual version number in `X.Y.Z` format (e.g., `1.0.0`). You can find the latest version via Klleon Studio or official announcements.
+\:::
+
+## SDK Initialization
+
+After the SDK is loaded, initialize it using `window.KlleonChat.init()`. Initialization typically happens after the DOM is ready, usually inside your main app script.
+
+```tsx title="App.tsx (React)"
+import { useEffect } from "react";
+
+function App() {
+  useEffect(() => {
+    const { KlleonChat } = window;
+
+    const init = async () => {
+      KlleonChat.onStatusEvent((status) => {
+        if (status === "VIDEO_CAN_PLAY") {
+          console.log("Avatar video ready!");
+        }
+      });
+
+      KlleonChat.onChatEvent((chatData) => {
+        console.log("SDK Chat Event:", chatData);
+      });
+
+      await KlleonChat.init({
+        sdk_key: "YOUR_SDK_KEY",
+        avatar_id: "YOUR_AVATAR_ID",
+      });
+    };
+    init();
+  }, []);
+
+  return <></>;
+}
+
+export default App;
+```
+
+### Init Options
+
+The `init()` method accepts various configuration options:
+
+<Table columns={setup.en.initOptionColumns} data={setup.en.initOptionData} />
+
+\:::tip About `user_key`
+The `user_key` is managed through the End-User API. Contact `partnership@klleon.io` for access and usage instructions.
+\:::
+
+## Full Working Example
+
+Here’s a complete working example showing SDK installation, event handling, and initialization.
+
+```html title="index.html"
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS + TailwindCSS</title>
+    <script src="https://web.sdk.klleon.io/1.0.0/klleon-chat.umd.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+```tsx title="App.tsx"
+import { useEffect, useRef, type CSSProperties } from "react";
+
+interface AvatarProps {
+  videoStyle?: CSSProperties;
+  volume?: number;
+}
+
+interface ChatProps {
+  delay?: number;
+  type?: "voice" | "text";
+  isShowCount?: boolean;
+}
+
+function App() {
+  const avatarRef = useRef<HTMLElement & AvatarProps>(null);
+  const chatRef = useRef<HTMLElement & ChatProps>(null);
+
+  useEffect(() => {
+    const { KlleonChat } = window;
+
+    const init = async () => {
+      KlleonChat.onStatusEvent((status) => {
+        if (status === "VIDEO_CAN_PLAY") {
+          console.log("Avatar video ready!");
+        }
+      });
+
+      KlleonChat.onChatEvent((chatData) => {
+        console.log("SDK Chat Event:", chatData);
+      });
+
+      await KlleonChat.init({
+        sdk_key: "YOUR_SDK_KEY",
+        avatar_id: "YOUR_AVATAR_ID",
+      });
+    };
+    init();
+
+    if (avatarRef.current) {
+      avatarRef.current.videoStyle = {
+        borderRadius: "30px",
+        objectFit: "cover",
+      };
+      avatarRef.current.volume = 100;
+    }
+
+    if (chatRef.current) {
+      chatRef.current.delay = 30;
+      chatRef.current.type = "text";
+      chatRef.current.isShowCount = true;
+    }
+
+    return () => {
+      KlleonChat.destroy();
+    };
+  }, []);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        width: "600px",
+        height: "720px",
+        gap: "0px 24px",
+      }}
+    >
+      <avatar-container
+        ref={avatarRef}
+        style={{ flex: 1 }}
+        class=""
+      ></avatar-container>
+      <chat-container
+        ref={chatRef}
+        style={{ flex: 1 }}
+        class="rounded-3xl"
+      ></chat-container>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### Live Example
+
+<SetUpExample />

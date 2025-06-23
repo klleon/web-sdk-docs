@@ -1,35 +1,37 @@
 ---
+
 id: vanilla-js
-title: Vanilla JS 기본 예제
+title: Base Vanilla JS Example
 sidebar_label: Base Vanilla JS Example
+
 ---
 
 import Head from "@docusaurus/Head";
 
 <Head>
-  <title>{`Klleon Chat SDK Vanilla JS 예제 - index.html 단일 파일 실행`}</title>
+  <title>{`Klleon Chat SDK Vanilla JS Example - Single index.html File`}</title>
   <meta
     name="description"
-    content="Klleon Chat SDK를 설치 없이 바로 사용할 수 있는 Vanilla JS 예제를 제공합니다. index.html 한 개 파일로 SDK 초기화, 아바타 메시지 전송, echo 발화까지 테스트할 수 있습니다."
+    content="Run the Klleon Chat SDK directly without any installation using a Vanilla JS example. A single index.html file lets you initialize the SDK, send messages, and test echo speech."
   />
   <meta
     name="keywords"
-    content="Klleon Chat SDK, Vanilla JS, SDK 예제, index.html 실행, 자바스크립트 챗봇, 아바타 메서드, sendTextMessage, echo, sdk 초기화, script 태그 연동, 디지털 휴먼, 클레온"
+    content="Klleon Chat SDK, Vanilla JS, SDK Example, index.html Run, JavaScript Chatbot, Avatar Methods, sendTextMessage, echo, SDK Initialization, script tag integration, Digital Human, Klleon"
   />
 </Head>
 
-# Vanilla JS 전체 예제
+# Complete Vanilla JS Example
 
-아래 코드를 `index.html` 파일로 저장하고, `{VERSION}`, `YOUR_SDK_KEY`, `YOUR_AVATAR_ID`를 실제 값으로 변경한 후 웹 브라우저에서 실행해 보세요. SDK의 상태 변경 및 이벤트는 브라우저의 개발자 콘솔에서 확인할 수 있습니다.
+Save the code below as `index.html`, replace `{VERSION}`, `YOUR_SDK_KEY`, and `YOUR_AVATAR_ID` with actual values, and open it in your browser. You can observe SDK state changes and events via the browser’s developer console.
 
 ```html title="index.html"
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Klleon Chat SDK - Vanilla JS 최소 예제</title>
-    {/* TODO: {VERSION}을 실제 SDK 버전으로 변경하세요. (예: 1.2.0) */}
+    <title>Klleon Chat SDK - Minimal Vanilla JS Example</title>
+    <!-- Replace {VERSION} with the actual SDK version (e.g., 1.2.0) -->
     <script src="https://web.sdk.klleon.io/{VERSION}/klleon-chat.umd.js"></script>
     <style>
       body {
@@ -113,7 +115,7 @@ import Head from "@docusaurus/Head";
     </style>
   </head>
   <body>
-    <h1>Klleon Chat SDK - 메서드 테스트</h1>
+    <h1>Klleon Chat SDK - Method Test</h1>
 
     <div class="container">
       <div class="avatar-section">
@@ -133,25 +135,24 @@ import Head from "@docusaurus/Head";
           <input
             type="text"
             id="messageInput"
-            placeholder="전송할 메시지 입력..."
+            placeholder="Enter message to send..."
           />
-          <button id="sendMessageBtn">전송</button>
+          <button id="sendMessageBtn">Send</button>
         </div>
         <div class="input-group">
           <label for="echoInput">echo:</label>
           <input
             type="text"
             id="echoInput"
-            placeholder="아바타가 발화할 내용..."
+            placeholder="Text for avatar to speak..."
           />
-          <button id="echoBtn">발화</button>
+          <button id="echoBtn">Speak</button>
         </div>
       </div>
     </div>
 
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
-        // TODO: 아래 YOUR_SDK_KEY와 YOUR_AVATAR_ID를 실제 발급받은 값으로 변경하세요.
         const sdkKey = "YOUR_SDK_KEY";
         const avatarId = "YOUR_AVATAR_ID";
 
@@ -162,19 +163,18 @@ import Head from "@docusaurus/Head";
 
         if (!window.KlleonChat) {
           console.error(
-            "Klleon Chat SDK가 로드되지 않았습니다. HTML의 script 태그를 확인하세요."
+            "Klleon Chat SDK not loaded. Please check the script tag."
           );
           return;
         }
 
-        console.log("SDK 로드 확인됨. 초기화를 시도합니다...");
+        console.log("SDK loaded. Attempting initialization...");
 
         try {
-          // 이벤트 리스너 먼저 등록
           window.KlleonChat.onStatusEvent((status) => {
             console.log(`SDK Status Event: ${status}`);
             if (status === "VIDEO_CAN_PLAY") {
-              console.log("아바타 영상 재생 준비 완료! SDK 메서드 사용 가능.");
+              console.log("Avatar video ready! SDK methods available.");
             }
           });
 
@@ -182,24 +182,23 @@ import Head from "@docusaurus/Head";
             console.log(`SDK Chat Event: ${JSON.stringify(chatData)}`);
           });
 
-          // SDK 초기화
           await window.KlleonChat.init({
             sdk_key: sdkKey,
             avatar_id: avatarId,
             log_level: "info",
           });
-          console.log("SDK 초기화 성공!");
+          console.log("SDK initialized successfully!");
 
           sendMessageBtn.addEventListener("click", () => {
             const message = messageInput.value.trim();
             if (message) {
               try {
                 window.KlleonChat.sendTextMessage(message);
-                console.log(`sendTextMessage 호출: "${message}"`);
+                console.log(`sendTextMessage called: \"${message}\"`);
                 messageInput.value = "";
               } catch (error) {
                 console.error(
-                  `sendTextMessage 오류: ${error.message || error}`
+                  `sendTextMessage error: ${error.message || error}`
                 );
               }
             }
@@ -210,17 +209,18 @@ import Head from "@docusaurus/Head";
             if (textToEcho) {
               try {
                 window.KlleonChat.echo(textToEcho);
-                console.log(`echo 호출: "${textToEcho}"`);
+                console.log(`echo called: \"${textToEcho}\"`);
                 echoInput.value = "";
               } catch (error) {
-                console.error(`echo 오류: ${error.message || error}`);
+                console.error(`echo error: ${error.message || error}`);
               }
             }
           });
         } catch (error) {
-          // init 또는 이벤트 리스너 등록 중 발생한 오류
           console.error(
-            `SDK 초기화 또는 이벤트 리스너 설정 실패: ${error.message || error}`
+            `SDK initialization or event listener setup failed: ${
+              error.message || error
+            }`
           );
         }
 
@@ -229,7 +229,7 @@ import Head from "@docusaurus/Head";
             window.KlleonChat &&
             typeof window.KlleonChat.destroy === "function"
           ) {
-            console.log("페이지 이탈 전 SDK 리소스를 정리합니다.");
+            console.log("Cleaning up SDK resources before page unload.");
             window.KlleonChat.destroy();
           }
         });

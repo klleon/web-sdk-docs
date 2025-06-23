@@ -1,6 +1,6 @@
 ---
 id: react
-title: React 기본 예제
+title: Base React Example
 sidebar_label: Base React Example
 ---
 
@@ -8,33 +8,35 @@ import BaseReactExample from "@site/src/components/example/BaseReactExample";
 import Head from "@docusaurus/Head";
 
 <Head>
-  <title>{`Klleon Chat SDK React 예제 - 아바타 연동, echo, 이벤트 처리`}</title>
+  <title>
+    {`Klleon Chat SDK React Example - Avatar Integration, echo, Event Handling`}
+  </title>
   <meta
     name="description"
-    content="Klleon Chat SDK를 React 프로젝트에 연동하는 방법을 안내합니다. script 태그 설치부터, 아바타 컴포넌트 연동, echo 메시지 테스트까지 기본 예제를 통해 쉽게 확인하세요."
+    content="Learn how to integrate Klleon Chat SDK into your React project. From script tag installation to avatar component usage and echo message testing, this example guides you step-by-step."
   />
   <meta
     name="keywords"
-    content="Klleon Chat SDK, React 예제, 아바타 연동, echo 메서드, SDK 초기화, window.KlleonChat, avatar-container, chat-container, 자바스크립트 SDK, TypeScript 지원, 클레온"
+    content="Klleon Chat SDK, React Example, Avatar Integration, echo Method, SDK Initialization, window.KlleonChat, avatar-container, chat-container, JavaScript SDK, TypeScript Support, Klleon"
   />
 </Head>
 
 # React
 
-## 사전 준비
+## Prerequisites
 
-### 1. SDK 스크립트 추가
+### 1. Add SDK Script
 
-`public/index.html` 파일의 `<head>` 태그 내에 SDK 스크립트를 추가합니다.
+Add the SDK script inside the `<head>` tag of your `public/index.html` file.
 
 ```html title="public/index.html"
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    {/* ... 기타 메타 태그 및 링크 ... */}
+    {/* ... other meta tags and links ... */}
     <title>React + Klleon Chat SDK</title>
-    {/* TODO: {VERSION}을 실제 SDK 버전으로 변경하세요. (예: 1.2.0) */}
+    {/* TODO: Replace {VERSION} with the actual SDK version (e.g., 1.2.0) */}
     <script src="https://web.sdk.klleon.io/{VERSION}/klleon-chat.umd.js"></script>
   </head>
   <body>
@@ -43,14 +45,15 @@ import Head from "@docusaurus/Head";
 </html>
 ```
 
-### 2. TypeScript 타입 지원 (선택 사항)
+### 2. TypeScript Type Support (Optional)
 
-Klleon Chat SDK는 TypeScript 타입 정의를 제공할 수 있습니다. 프로젝트에 해당 타입 정의(.d.ts) 파일이 포함되어 있다면, `window.KlleonChat` 전역 객체 및 SDK 메서드, 웹 컴포넌트 props 등에 대한 타입 추론과 자동 완성을 활용할 수 있습니다.
+Klleon Chat SDK provides TypeScript declaration files. If you include these `.d.ts` files in your project, you can benefit from full type safety and autocomplete for `window.KlleonChat`, SDK methods, and web component props.
 
-## React 예제 (`App.tsx`)
+## React Example (`App.tsx`)
 
 <details>
-<summary>CSS 스타일</summary>
+<summary>CSS Styles</summary>
+
 ```css title="custom.css"
 .base-react-example-page {
   width: 100%;
@@ -126,13 +129,14 @@ Klleon Chat SDK는 TypeScript 타입 정의를 제공할 수 있습니다. 프�
   }
 }
 ```
+
 </details>
 
 ```tsx title="src/App.tsx"
 import { ChatData, Status } from "@site/src/types/global";
 import { useEffect, useRef, useState, CSSProperties } from "react";
 
-// TODO: 실제 SDK 키와 아바타 ID로 변경하세요.
+// TODO: Replace with your actual SDK key and Avatar ID
 const SDK_KEY = "YOUR_SDK_KEY";
 const AVATAR_ID = "YOUR_AVATAR_ID";
 
@@ -174,7 +178,7 @@ function App() {
   const startChat = async () => {
     setIsChatStarted(true);
     const KlleonChat = window.KlleonChat;
-    console.log("SDK 로드 확인됨. 초기화를 시도합니다...");
+    console.log("SDK detected. Attempting initialization...");
 
     KlleonChat.onStatusEvent((status: Status) => {
       console.log(`SDK Status Event: ${status}`);
@@ -190,9 +194,11 @@ function App() {
         avatar_id: AVATAR_ID,
         log_level: "debug",
       });
-      console.log("SDK 초기화 성공!");
+      console.log("SDK initialized successfully!");
     } catch (error) {
-      console.error(`SDK 초기화 실패: ${(error as Error).message || error}`);
+      console.error(
+        `SDK initialization failed: ${(error as Error).message || error}`
+      );
       setIsLoading(false);
     } finally {
       setIsLoading(false);
@@ -219,21 +225,15 @@ function App() {
         {isLoading && (
           <span className="loading-text">Klleon Avatar Loading...</span>
         )}
-        <avatar-container
-          ref={avatarContainerRef}
-          class="avatar-container" // className 속성 사용 불가 class 속성 사용
-        />
+        <avatar-container ref={avatarContainerRef} class="avatar-container" />
         <div className="chat-control-container">
-          <chat-container
-            ref={chatContainerRef}
-            class="chat-container" // className 속성 사용 불가 class 속성 사용
-          />
+          <chat-container ref={chatContainerRef} class="chat-container" />
           <div className="chat-echo-container">
             <input
               type="text"
               value={echoText}
               onChange={(e) => setEchoText(e.target.value)}
-              placeholder="echo 내용 입력..."
+              placeholder="Enter echo text..."
               disabled={isLoading}
               className="echo-input"
             />
@@ -242,7 +242,7 @@ function App() {
               disabled={isLoading}
               className="echo-button"
             >
-              echo 전송
+              Send echo
             </button>
           </div>
         </div>
@@ -254,6 +254,6 @@ function App() {
 export default App;
 ```
 
-## 채팅 화면 실행
+## Run the Chat UI
 
 <BaseReactExample />
