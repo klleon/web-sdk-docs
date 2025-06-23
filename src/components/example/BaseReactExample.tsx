@@ -92,7 +92,7 @@ function App() {
   };
 
   return (
-    <div className="custom-chat-page">
+    <div className="base-react-example-page">
       {!isChatStarted && (
         <button
           onClick={startChat}
@@ -114,7 +114,7 @@ function App() {
         {isLoading && (
           <span className="loading-text">Klleon Avatar Loading...</span>
         )}
-        <avatar-container ref={avatarContainerRef} />
+        <avatar-container ref={avatarContainerRef} class="avatar-container" />
         <div className="chat-control-container">
           <chat-container ref={chatContainerRef} class="chat-container" />
           <div className="chat-echo-container">
