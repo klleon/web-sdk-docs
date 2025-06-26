@@ -122,6 +122,41 @@ const config: Config = {
       },
       items: [
         {
+          type: "html",
+          position: "left",
+          value: `
+            <span style="
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              font-size: 1.15em;
+              font-weight: 600;
+              color: #24292f;
+              padding: 0;
+              box-shadow: none;
+            ">
+              1.2.0
+              <span style="
+                display: inline-block;
+                margin-left: 4px;
+                background: none;
+                color: #238636;
+                border: 1.5px solid #238636;
+                border-radius: 10px;
+                font-size: 0.5em;
+                font-weight: 700;
+                padding: 3px 5px;
+                letter-spacing: 0.5px;
+                line-height: 1.2;
+                box-shadow: none;
+                vertical-align: middle;
+              ">
+                Latest
+              </span>
+            </span>
+        `,
+        },
+        {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
           position: "left",

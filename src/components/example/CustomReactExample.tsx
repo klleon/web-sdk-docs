@@ -1,3 +1,4 @@
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { ChatData, ResponseChatType, Status } from "@site/src/types/global";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 
@@ -10,6 +11,8 @@ const SDK_KEY = "APP-vN4Mh9vmHqtPbTDbDhCp";
 const AVATAR_ID = "a5fe629d-0090-11ef-8ee1-0abbf354c5cc";
 
 const CustomReactExample = () => {
+  const { i18n } = useDocusaurusContext();
+
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<Status>("IDLE");
   const [chatData, setChatData] = useState<ChatData[]>([]);
@@ -78,9 +81,26 @@ const CustomReactExample = () => {
         }
       });
 
+      const getLocale = () => {
+        switch (i18n.currentLocale) {
+          case "ko":
+            return "ko_kr";
+          case "en":
+            return "en_us";
+          case "ja":
+            return "ja_jp";
+          case "id":
+            return "id_id";
+          default:
+            return "ko_kr";
+        }
+      };
+
       await KlleonChat.init({
         sdk_key: SDK_KEY,
         avatar_id: AVATAR_ID,
+        subtitle_code: getLocale(),
+        voice_code: getLocale(),
       });
       setGuideText("연결이 완료되었습니다.");
     },

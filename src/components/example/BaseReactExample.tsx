@@ -1,3 +1,4 @@
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useTimer } from "@site/src/hooks/customHooks";
 import { ChatData, Status } from "@site/src/types/global";
 import { useEffect, useRef, useState, CSSProperties } from "react";
@@ -18,6 +19,8 @@ interface ChatProps {
 }
 
 function App() {
+  const { i18n } = useDocusaurusContext();
+
   const [echoText, setEchoText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isChatStarted, setIsChatStarted] = useState(false);
@@ -72,10 +75,26 @@ function App() {
       console.log("SDK Chat Event:", chatData);
     });
     try {
+      const getLocale = () => {
+        switch (i18n.currentLocale) {
+          case "ko":
+            return "ko_kr";
+          case "en":
+            return "en_us";
+          case "ja":
+            return "ja_jp";
+          case "id":
+            return "id_id";
+          default:
+            return "ko_kr";
+        }
+      };
       await KlleonChat.init({
         sdk_key: SDK_KEY,
         avatar_id: AVATAR_ID,
         log_level: "info",
+        subtitle_code: getLocale(),
+        voice_code: getLocale(),
       });
       console.log("SDK 초기화 성공!");
     } catch (error) {
