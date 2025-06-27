@@ -2,22 +2,6 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
-// 환경별 설정
-const getEnvironmentConfig = () => {
-  const isDevelopment = process.env.NODE_ENV === "development";
-
-  return {
-    sdkKey: isDevelopment
-      ? process.env.REACT_APP_SDK_KEY || "dev_sdk_key"
-      : process.env.REACT_APP_SDK_KEY || "prod_sdk_key",
-    avatarId: isDevelopment
-      ? process.env.REACT_APP_AVATAR_ID || "dev_avatar_id"
-      : process.env.REACT_APP_AVATAR_ID || "prod_avatar_id",
-  };
-};
-
 const config: Config = {
   title: "Klleon Chat SDK - AI Avatar Chat JavaScript Library",
   tagline:
@@ -50,12 +34,15 @@ const config: Config = {
     localeConfigs: {
       ko: {
         label: "한국어",
+        htmlLang: "ko",
       },
       en: {
         label: "English",
+        htmlLang: "en",
       },
       ja: {
         label: "日本語",
+        htmlLang: "ja",
       },
     },
   },
