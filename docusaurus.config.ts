@@ -10,6 +10,7 @@ const config: Config = {
 
   url: "https://docs.klleon.io",
   baseUrl: "/",
+  trailingSlash: false,
   organizationName: "klleon", // Usually your GitHub org/user name.
   projectName: "web-sdk-docs", // Usually your repo name.
 
@@ -60,6 +61,12 @@ const config: Config = {
         theme: {
           customCss: "./src/css/custom.css",
         },
+        sitemap: {
+          changefreq: "weekly",
+          priority: 0.5,
+          ignorePatterns: ["/docs/tags/**", "/search/**"],
+          filename: "sitemap.xml",
+        },
       } satisfies Preset.Options,
     ],
   ],
@@ -73,6 +80,8 @@ const config: Config = {
 
   themeConfig: {
     metadata: [
+      { name: "robots", content: "index,follow" },
+      { name: "googlebot", content: "index,follow" },
       {
         name: "keywords",
         content: [

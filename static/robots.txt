@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+
+# 사이트맵 위치 (Docusaurus가 자동 생성)
+Sitemap: https://docs.klleon.io/sitemap.xml
+
+# 다국어 사이트맵들
+Sitemap: https://docs.klleon.io/sitemap.xml
+Sitemap: https://docs.klleon.io/ko/sitemap.xml
+Sitemap: https://docs.klleon.io/en/sitemap.xml
+Sitemap: https://docs.klleon.io/ja/sitemap.xml
+
+# 크롤링 속도 조절 (1초 대기)
+Crawl-delay: 1
+
+# 제외할 경로들 (선택사항)
+Disallow: /search
+Disallow: /_next/
+Disallow: /.docusaurus/
+
+# 특정 봇 설정
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
