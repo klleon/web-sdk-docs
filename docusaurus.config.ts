@@ -4,6 +4,20 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+// 환경별 설정
+const getEnvironmentConfig = () => {
+  const isDevelopment = process.env.NODE_ENV === "development";
+
+  return {
+    sdkKey: isDevelopment
+      ? process.env.REACT_APP_SDK_KEY || "dev_sdk_key"
+      : process.env.REACT_APP_SDK_KEY || "prod_sdk_key",
+    avatarId: isDevelopment
+      ? process.env.REACT_APP_AVATAR_ID || "dev_avatar_id"
+      : process.env.REACT_APP_AVATAR_ID || "prod_avatar_id",
+  };
+};
+
 const config: Config = {
   title: "Klleon Chat SDK - AI Avatar Chat JavaScript Library",
   tagline:
@@ -12,14 +26,17 @@ const config: Config = {
 
   url: "https://docs.klleon.io",
   baseUrl: "/",
-
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
   organizationName: "klleon", // Usually your GitHub org/user name.
   projectName: "web-sdk-docs", // Usually your repo name.
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
+
+  customFields: {
+    sdkKey: process.env.REACT_APP_SDK_KEY || "APP-vN4Mh9vmHqtPbTDbDhCp",
+    avatarId:
+      process.env.REACT_APP_AVATAR_ID || "a5fe629d-0090-11ef-8ee1-0abbf354c5cc",
+  },
 
   scripts: [
     {
@@ -27,9 +44,6 @@ const config: Config = {
       async: true,
     },
   ],
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "ko",
     locales: ["ko", "en", "ja"],

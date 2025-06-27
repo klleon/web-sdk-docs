@@ -1,11 +1,8 @@
+import Translate, { translate } from "@docusaurus/Translate";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useTimer } from "@site/src/hooks/customHooks";
 import { ChatData, Status } from "@site/src/types/global";
 import { useEffect, useRef, useState, CSSProperties } from "react";
-
-// TODO: 실제 SDK 키와 아바타 ID로 변경하세요.
-const SDK_KEY = "APP-vN4Mh9vmHqtPbTDbDhCp";
-const AVATAR_ID = "a5fe629d-0090-11ef-8ee1-0abbf354c5cc";
 
 interface AvatarProps {
   videoStyle?: CSSProperties;
@@ -19,7 +16,7 @@ interface ChatProps {
 }
 
 function App() {
-  const { i18n } = useDocusaurusContext();
+  const { i18n, siteConfig } = useDocusaurusContext();
 
   const [echoText, setEchoText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -60,14 +57,16 @@ function App() {
 
     setIsChatStarted(true);
     const KlleonChat = window.KlleonChat;
-    console.log("SDK 로드 확인됨. 초기화를 시도합니다...");
+    console.log(
+      translate({ message: "SDK 로드 확인됨. 초기화를 시도합니다..." })
+    );
 
     KlleonChat.onStatusEvent((status: Status) => {
       console.log(`SDK Status Event: ${status}`);
       setIsLoading(status !== "VIDEO_CAN_PLAY");
       if (status === "VIDEO_CAN_PLAY") {
         start();
-        console.log("아바타 영상 재생 준비 완료!");
+        console.log(translate({ message: "아바타 영상 재생 준비 완료!" }));
       }
     });
 
@@ -89,16 +88,21 @@ function App() {
             return "ko_kr";
         }
       };
+
       await KlleonChat.init({
-        sdk_key: SDK_KEY,
-        avatar_id: AVATAR_ID,
+        sdk_key: siteConfig.customFields.sdkKey as string,
+        avatar_id: siteConfig.customFields.avatarId as string,
         log_level: "info",
         subtitle_code: getLocale(),
         voice_code: getLocale(),
       });
-      console.log("SDK 초기화 성공!");
+      console.log(translate({ message: "SDK 초기화 성공!" }));
     } catch (error) {
-      console.error(`SDK 초기화 실패: ${(error as Error).message || error}`);
+      console.error(
+        translate({
+          message: `SDK 초기화 실패`,
+        }) + `: ${(error as Error).message || error}`
+      );
       setIsLoading(false);
     } finally {
       setIsLoading(false);
@@ -118,10 +122,18 @@ function App() {
           disabled={isLoading}
           className="start-chat-button"
         >
-          Start Chat
+          <Translate id="base-react-example.start-chat">Start Chat</Translate>
         </button>
       )}
-      {isChatStarted && <h5>남은 대화 시간: {timeLeft} 초</h5>}
+      {isChatStarted && (
+        <h5>
+          <Translate id="base-react-example.remaining-time">
+            남은 대화 시간:
+          </Translate>
+          {timeLeft}
+          <Translate id="base-react-example.seconds">초</Translate>
+        </h5>
+      )}
 
       <div
         className="sdk-container"
@@ -141,7 +153,9 @@ function App() {
               type="text"
               value={echoText}
               onChange={(e) => setEchoText(e.target.value)}
-              placeholder="echo 내용 입력..."
+              placeholder={translate({
+                message: "echo 내용 입력...",
+              })}
               disabled={isLoading}
               className="echo-input"
             />
@@ -150,7 +164,7 @@ function App() {
               disabled={isLoading}
               className="echo-button"
             >
-              echo 전송
+              <Translate id="base-react-example.send-echo">echo 전송</Translate>
             </button>
           </div>
         </div>

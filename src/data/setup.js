@@ -247,11 +247,11 @@ export const setup = {
   },
   ja: {
     initOptionColumns: [
-      { header: "parameter", label: "파라미터" },
-      { header: "type", label: "타입" },
-      { header: "required", label: "필수여부" },
-      { header: "default", label: "기본값" },
-      { header: "description", label: "설명" },
+      { header: "parameter", label: "parameter" },
+      { header: "type", label: "type" },
+      { header: "required", label: "required" },
+      { header: "default", label: "default" },
+      { header: "description", label: "description" },
     ],
     initOptionData: [
       {
@@ -259,14 +259,14 @@ export const setup = {
         type: "string",
         required: "O",
         default: "-",
-        description: "클레온 스튜디오에서 발급받은 SDK 키",
+        description: "クレオンスタジオで発行されたSDKキー",
       },
       {
         parameter: "avatar_id",
         type: "string",
         required: "O",
         default: "-",
-        description: "사용할 아바타의 고유 ID",
+        description: "使用するアバターの固有ID",
       },
       {
         parameter: "subtitle_code",
@@ -274,21 +274,21 @@ export const setup = {
         required: "X",
         default: "`ko_kr`",
         description:
-          "아바타 발화 자막 언어 설정입니다.\n지원 코드: `ko_kr` (한국어), `en_us` (영어), `ja_jp` (일본어), `id_id` (인도네시아어) 등",
+          "アバター発話字幕言語設定です。\nサポートコード: `ko_kr` (韓国語), `en_us` (英語), `ja_jp` (日本語), `id_id` (インドネシア語) など",
       },
       {
         parameter: "voice_code",
         type: "string",
         required: "X",
         default: "`ko_kr`",
-        description: "아바타 발화 음성 언어 설정입니다.",
+        description: "アバター発話音声言語設定です。",
       },
       {
         parameter: "voice_tts_speech_speed",
         type: "number",
         required: "X",
         default: "`1.0`",
-        description: "아바타 발화 속도 조절 기능입니다.\n범위: 0.5 ~ 2.0",
+        description: "アバター発話速度調整機能です。\n範囲: 0.5 ~ 2.0",
       },
       {
         parameter: "enable_microphone",
@@ -296,7 +296,7 @@ export const setup = {
         required: "X",
         default: "`true`",
         description:
-          "`true`로 설정 시, 마이크 권한 요청 없이 음성 입력 기능 시도합니다.\n(브라우저 정책에 따라 동작이 다를 수 있습니다.)",
+          "`true`に設定すると、マイク権限の要求なしに音声入力機能を試みます。\n(ブラウザのポリシーによって動作が異なる場合があります。)",
       },
       {
         parameter: "log_level",

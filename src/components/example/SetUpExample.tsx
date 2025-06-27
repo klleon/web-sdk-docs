@@ -1,5 +1,7 @@
+import Translate, { translate } from "@docusaurus/Translate";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTimer } from "@site/src/hooks/customHooks";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 interface AvatarProps {
   videoStyle?: CSSProperties;
@@ -13,6 +15,8 @@ interface ChatProps {
 }
 
 const InitPage = () => {
+  const { i18n, siteConfig } = useDocusaurusContext();
+
   const avatarRef = useRef<HTMLElement & AvatarProps>(null);
   const chatRef = useRef<HTMLElement & ChatProps>(null);
 
@@ -60,7 +64,7 @@ const InitPage = () => {
         // 상세한 Status 값과 의미는 'usage > 이벤트 처리' 문서를 참고하세요.
         if (status === "VIDEO_CAN_PLAY") {
           start();
-          console.log("아바타 영상 재생 준비 완료!");
+          console.log(translate({ message: "아바타 영상 재생 준비 완료!" }));
         }
         setIsChatStarted(status === "VIDEO_CAN_PLAY");
       });
@@ -71,10 +75,27 @@ const InitPage = () => {
         console.log("SDK Chat Event:", chatData);
       });
 
+      const getLocale = () => {
+        switch (i18n.currentLocale) {
+          case "ko":
+            return "ko_kr";
+          case "en":
+            return "en_us";
+          case "ja":
+            return "ja_jp";
+          case "id":
+            return "id_id";
+          default:
+            return "ko_kr";
+        }
+      };
+
       // 3. SDK 초기화
       await KlleonChat.init({
-        sdk_key: "APP-vN4Mh9vmHqtPbTDbDhCp",
-        avatar_id: "a5fe629d-0090-11ef-8ee1-0abbf354c5cc",
+        sdk_key: siteConfig.customFields.sdkKey as string,
+        avatar_id: siteConfig.customFields.avatarId as string,
+        subtitle_code: getLocale(),
+        voice_code: getLocale(),
         // custom_id: "YOUR_CUSTOM_ID",
         // user_key: "YOUR_USER_KEY",
         // voice_code: "ko_kr",
@@ -102,7 +123,9 @@ const InitPage = () => {
           }}
           onClick={startChat}
         >
-          <strong>start chat!</strong>
+          <strong>
+            <Translate id="setup-example.start-chat">start chat!</Translate>
+          </strong>
         </button>
       )}
       <div
@@ -116,7 +139,15 @@ const InitPage = () => {
           opacity: isChatStarted ? 1 : 0,
         }}
       >
-        {isChatStarted && <h5>남은 대화 시간: {timeLeft} 초</h5>}
+        {isChatStarted && (
+          <h5>
+            <Translate id="setup-example.remaining-time">
+              남은 대화 시간:
+            </Translate>
+            {timeLeft}
+            <Translate id="setup-example.seconds">초</Translate>
+          </h5>
+        )}
         <div
           style={{
             display: "flex",

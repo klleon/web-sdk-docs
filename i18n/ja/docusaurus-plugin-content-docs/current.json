@@ -1,0 +1,30 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.setup": {
+    "message": "setup",
+    "description": "The label for category setup in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.usage": {
+    "message": "usage",
+    "description": "The label for category usage in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.guides": {
+    "message": "guides",
+    "description": "The label for category guides in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.examples": {
+    "message": "examples",
+    "description": "The label for category examples in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Changelog": {
+    "message": "Changelog",
+    "description": "The label for category Changelog in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.変更履歴": {
+    "message": "変更履歴",
+    "description": "The label for category 変更履歴 in sidebar tutorialSidebar"
+  }
+}
