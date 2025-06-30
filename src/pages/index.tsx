@@ -112,8 +112,8 @@ const Home = () => {
     };
 
     await KlleonChat.init({
-      sdk_key: "APP-vN4Mh9vmHqtPbTDbDhCp",
-      avatar_id: "a5de0514-0090-11ef-8ee1-0abbf354c5cc",
+      sdk_key: siteConfig.customFields.sdkKey as string,
+      avatar_id: siteConfig.customFields.avatarId as string,
       log_level: "silent",
       subtitle_code: getLocale(),
       voice_code: getLocale(),
@@ -197,6 +197,7 @@ const Home = () => {
                         display: "flex",
                         gap: "0px 6px",
                         alignItems: "center",
+                        cursor: "pointer",
                       }}
                       onClick={reStartChat}
                     >
