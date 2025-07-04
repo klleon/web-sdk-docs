@@ -148,6 +148,11 @@ export const usage = {
         description:
           "아바타 비디오 재생이 가능하며, 대부분의 SDK 메서드를 호출할 수 있는 준비 상태입니다.",
       },
+      {
+        status: "DESTROYED",
+        description:
+          "SDK가 완전히 종료된 상태입니다. `destroy()` 메서드 호출 후 SDK의 최종 상태를 나타냅니다.",
+      },
     ],
     responseChatTypeValuesColumns: [
       { header: "chatType", label: "ResponseChatType 값" },
@@ -235,6 +240,60 @@ export const usage = {
         chatType: "USER_SPEECH_STOPPED",
         description:
           "SDK가 사용자 음성 입력이 멈춘 것을 감지했을 때 발생합니다.",
+      },
+    ],
+    errorDataColumns: [
+      { header: "property", label: "속성명" },
+      { header: "type", label: "타입" },
+      { header: "description", label: "설명" },
+    ],
+    errorDataRows: [
+      {
+        property: "code",
+        type: "string (ErrorCode)",
+        description: "오류의 종류를 나타내는 문자열입니다.",
+      },
+      {
+        property: "message",
+        type: "string",
+        description: "오류에 대한 상세한 설명 메시지입니다.",
+      },
+    ],
+
+    errorTypeColumns: [
+      { header: "errorCode", label: "ErrorCode 값" },
+      { header: "description", label: "설명" },
+    ],
+    errorTypeData: [
+      {
+        errorCode: "SOCKET_FAILED",
+        description:
+          "SDK 연결 시도 중 WebSocket 서버 연결에 실패했습니다. 수동 재연결이나 새로고침이 필요합니다.",
+      },
+      {
+        errorCode: "STREAMING_FAILED",
+        description:
+          "SDK 연결 시도 중 미디어 스트리밍(WebRTC) 서버 연결에 실패했습니다. 수동 재연결이나 새로고침이 필요합니다.",
+      },
+      {
+        errorCode: "STREAMING_RECONNECT_FAILED",
+        description:
+          "스트리밍이 네트워크 환경에 따라 자동으로 재연결을 시도하지만 타임아웃으로 실패했습니다. 수동 재연결이 필요합니다.",
+      },
+      {
+        errorCode: "VIDEO_ELEMENT_NOT_FOUND",
+        description:
+          "비디오 요소를 찾을 수 없습니다. <avatar-container> 요소가 올바르게 렌더링되었는지 확인하고 UI 상태를 점검하세요.",
+      },
+      {
+        errorCode: "SOCKET_DISCONNECTED_UNEXPECTEDLY",
+        description:
+          "WebSocket 연결이 예기치 않게 끊어졌습니다. 네트워크 상태를 확인하고 애플리케이션 요구사항에 따라 재연결 로직을 구현하세요.",
+      },
+      {
+        errorCode: "STREAMING_DISCONNECTED_UNEXPECTEDLY",
+        description:
+          "스트리밍 연결이 예기치 않게 끊어졌습니다. 미디어 연결 상태를 확인하고 애플리케이션 요구사항에 따라 재연결 로직을 구현하세요.",
       },
     ],
   },

@@ -159,7 +159,7 @@ window.KlleonChat.onStatusEvent(handleSdkStatus);
   data={usage.ko.statusPossibleValuesData}
 />
 
-#### Status 이벤트 흐름
+### Status 이벤트 흐름
 
 ```mermaid
 flowchart TD
@@ -172,15 +172,119 @@ flowchart TD
     E -->|실패| J[STREAMING_FAILED]
     E -->|성공| F[VIDEO_LOAD]
     F --> G[VIDEO_CAN_PLAY]
+    G -->|destroy 호출| M[DESTROYED]
 
     %% 스타일 지정
     classDef success fill:#d3f9d8,stroke:#3adb76,stroke-width:2px,color:#000;
     classDef failure fill:#ffe3e3,stroke:#ff6b6b,stroke-width:2px,color:#000;
+    classDef destroyed fill:#ffd700,stroke:#ff8c00,stroke-width:2px,color:#000;
 
     class D,E,F,G success;
     class C,I,J failure;
+    class M destroyed;
 ```
 
+### `KlleonChat.onErrorEvent(callback)`
+
+SDK 동작 중 발생하는 오류를 감지할 수 있는 이벤트 리스너입니다. WebSocket 연결 실패, 스트리밍 오류, 비디오 요소 문제 등 다양한 오류 상황을 실시간으로 모니터링할 수 있습니다.
+
+- **callback** (`(error: ErrorData) => void`, 필수): 오류 정보를 담은 `ErrorData` 객체를 인자로 받는 콜백 함수입니다.
+
+```tsx title="App.tsx (onErrorEvent 사용 예제)"
+import { useEffect, useRef } from "react";
+
+function App() {
+  const reconnectAttempts = useRef(0);
+  const maxReconnectAttempts = 3;
+
+  useEffect(() => {
+    const { KlleonChat } = window;
+
+    const handleError = (errorData) => {
+      console.error("SDK 오류 발생:", errorData);
+
+      switch (errorData.code) {
+        case "SOCKET_FAILED":
+        case "STREAMING_FAILED":
+        case "STREAMING_RECONNECT_FAILED":
+          if (reconnectAttempts.current < maxReconnectAttempts) {
+            console.log(
+              `재연결 시도 ${
+                reconnectAttempts.current + 1
+              }/${maxReconnectAttempts}`
+            );
+            reconnectAttempts.current++;
+
+            KlleonChat.reconnect()
+              .then(() => {
+                console.log("재연결 성공");
+                reconnectAttempts.current = 0; // 성공 시 카운터 리셋
+              })
+              .catch((error) => {
+                console.error("재연결 실패:", error);
+                if (reconnectAttempts.current >= maxReconnectAttempts) {
+                  console.error("최대 재연결 시도 횟수 초과");
+                  // 사용자에게 지속적인 문제 시 문의 안내
+                  alert(
+                    "연결에 문제가 있습니다. 지속적인 문제가 발생하는 경우 support@klleon.com으로 문의해주세요."
+                  );
+                }
+              });
+          }
+          break;
+        case "VIDEO_ELEMENT_NOT_FOUND":
+          console.log("비디오 요소 없음 - avatar-container 확인 필요");
+          // UI 요소 렌더링 상태 확인
+          break;
+        case "SOCKET_DISCONNECTED_UNEXPECTEDLY":
+        case "STREAMING_DISCONNECTED_UNEXPECTEDLY":
+          console.log("연결이 예기치 않게 끊어짐");
+          // 애플리케이션 상황에 따라 재연결 또는 사용자 알림
+          break;
+        default:
+          console.log("알 수 없는 오류:", errorData.message);
+      }
+    };
+
+    KlleonChat.onErrorEvent(handleError);
+  }, []);
+
+  return (
+    <div>
+      <avatar-container />
+      <chat-container />
+    </div>
+  );
+}
+
+export default App;
+```
+
+#### `ErrorData` 객체 상세
+
+<Table columns={usage.ko.errorDataColumns} data={usage.ko.errorDataRows} />
+
+#### 에러 코드 상세
+
+<Table columns={usage.ko.errorTypeColumns} data={usage.ko.errorTypeData} />
+
+:::info 에러 처리 가이드라인
+`onErrorEvent`를 통해 받은 오류 정보를 바탕으로 애플리케이션에 적합한 오류 처리 로직을 구현하세요.
+
+- **사용자 알림**: 오류 상황을 사용자에게 알리고 적절한 안내 메시지 제공
+- **수동 재연결**: `reconnect()` 메서드를 사용한 수동 재연결 (재연결 시도 횟수 제한 권장)
+- **지속적 문제 시 문의 안내**: 심각한 연결 문제가 지속될 경우 support@klleon.com으로 문의 안내
+- **오류 로깅**: 오류 정보를 로그 시스템에 기록하여 디버깅 지원
+
+**연결 실패 오류 (`SOCKET_FAILED`, `STREAMING_FAILED`)**: SDK 연결 시도 중 발생한 오류로, 수동 재연결이 필요합니다.
+
+**재연결 타임아웃 오류 (`STREAMING_RECONNECT_FAILED`)**: 스트리밍이 네트워크 환경에 따라 자동으로 재연결을 시도하지만 타임아웃으로 실패한 상황입니다.
+
+**재연결 시도 횟수 제한**: SDK 내부적으로 오류가 있는 경우 무한 재연결이 발생할 수 있으므로, 클라이언트 애플리케이션에서 재연결 시도 횟수를 제한하는 것을 권장합니다. 일반적으로 3회 정도로 제한하고, 실패 시 지속적인 문제가 있는 경우 support@klleon.com으로 문의해주세요.
+
+각 오류 상황에 대한 처리 방식은 애플리케이션의 특성과 사용자 경험을 고려하여 결정하시기 바랍니다.
+:::
+
 :::info 콜백 재등록
-`onChatEvent` 또는 `onStatusEvent`를 동일한 이벤트 타입에 대해 여러 번 호출하면, 마지막으로 등록된 콜백 함수만 활성화됩니다. 즉, 새 콜백을 등록하면 이전 콜백은 자동으로 해제됩니다. 명시적인 `off` 메서드는 제공되지 않습니다.
+`onChatEvent`, `onStatusEvent`, `onErrorEvent`를 동일한 이벤트 타입에 대해 여러 번 호출하면, 마지막으로 등록된 콜백 함수만 활성화됩니다. 즉, 새 콜백을 등록하면 이전 콜백은 자동으로 해제됩니다. 명시적인 `off` 메서드는 제공되지 않습니다.
 :::

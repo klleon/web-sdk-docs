@@ -1,0 +1,39 @@
+---
+id: v1.3.0
+title: v1.3.0
+sidebar_label: v1.3.0
+sidebar_position: 0
+description: Klleon Chat SDK v1.3.0 업데이트 내역
+---
+
+# Klleon Chat SDK v1.3.0
+
+## ✨ Features
+
+- `onErrorEvent` 이벤트 리스너 추가
+
+  - SDK 동작 중 발생하는 오류를 감지할 수 있는 이벤트 리스너
+  - 오류 발생 시 콜백 함수를 통해 오류 정보를 받을 수 있습니다
+  - 지원하는 에러 코드:
+    - `SOCKET_FAILED`: WebSocket 연결 실패
+    - `STREAMING_FAILED`: 스트리밍 연결 실패
+    - `STREAMING_RECONNECT_FAILED`: 스트리밍 서버 재접속 시도 후 타임아웃으로 실패 (수동 재연결 필요)
+    - `VIDEO_ELEMENT_NOT_FOUND`: 비디오 요소를 찾을 수 없음
+    - `SOCKET_DISCONNECTED_UNEXPECTEDLY`: WebSocket 연결이 예기치 않게 끊어짐
+    - `STREAMING_DISCONNECTED_UNEXPECTEDLY`: 스트리밍 연결이 예기치 않게 끊어짐
+
+- `reconnect` 메서드 추가
+
+  - 네트워크 오류 등으로 연결이 끊어진 경우 연결을 재시도하는 메서드
+  - 애플리케이션의 요구사항에 따라 수동으로 연결을 복구할 수 있습니다
+
+- `status` 값에 `destroyed` 추가
+  - SDK가 완전히 종료된 상태를 나타내는 새로운 status 값
+  - `destroy()` 메서드 호출 후 SDK의 최종 상태를 확인할 수 있습니다
+
+## Others
+
+- 오류 처리 및 연결 복구 기능 강화
+- SDK 상태 관리 개선
+- 에러 이벤트를 통한 상세한 오류 정보 제공
+- TypeScript 타입 정의 개선

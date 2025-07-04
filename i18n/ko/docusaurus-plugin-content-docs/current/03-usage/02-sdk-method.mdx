@@ -85,6 +85,96 @@ const App = () => {
 export default App;
 ```
 
+### `KlleonChat.reconnect()`
+
+네트워크 오류 등으로 연결이 끊어진 경우 SDK와 서버의 연결을 재시도합니다. 이 메서드는 오류 상황에서 수동으로 연결을 복구하는 데 사용됩니다.
+
+**사용 예시:**
+
+```tsx title="App.tsx (reconnect 메서드 사용)"
+import { useEffect, useRef } from "react";
+
+const App = () => {
+  const reconnectAttempts = useRef(0);
+  const maxReconnectAttempts = 3;
+
+  useEffect(() => {
+    const { KlleonChat } = window;
+
+    // 오류 이벤트 리스너 등록
+    KlleonChat.onErrorEvent((errorData) => {
+      console.error("SDK 오류 발생:", errorData);
+
+      switch (errorData.code) {
+        case "SOCKET_FAILED":
+        case "STREAMING_FAILED":
+        case "STREAMING_RECONNECT_FAILED":
+          console.log("연결 오류 발생 - 재연결 시도");
+          handleReconnect();
+          break;
+        default:
+          console.log("기타 오류:", errorData.message);
+      }
+    });
+
+    // 재연결 처리 함수
+    const handleReconnect = async () => {
+      if (reconnectAttempts.current >= maxReconnectAttempts) {
+        console.error("최대 재연결 시도 횟수 초과");
+        alert("연결에 실패했습니다.");
+        return;
+      }
+
+      try {
+        reconnectAttempts.current += 1;
+        console.log(
+          `재연결 시도 ${reconnectAttempts.current}/${maxReconnectAttempts}`
+        );
+        await KlleonChat.reconnect();
+        console.log("재연결 성공!");
+        reconnectAttempts.current = 0; // 성공 시 카운터 리셋
+      } catch (error) {
+        console.error(
+          `재연결 실패 (${reconnectAttempts.current}/${maxReconnectAttempts}):`,
+          error
+        );
+
+        if (reconnectAttempts.current >= maxReconnectAttempts) {
+          alert("연결에 실패했습니다.");
+        }
+      }
+    };
+
+    // SDK 초기화
+    KlleonChat.init({
+      sdk_key: "YOUR_SDK_KEY",
+      avatar_id: "YOUR_AVATAR_ID",
+    });
+  }, []);
+
+  return (
+    <div>
+      <avatar-container />
+      <chat-container />
+    </div>
+  );
+};
+
+export default App;
+```
+
+:::info 재연결 사용 시 주의사항
+
+- **상태 확인**: `reconnect()` 호출 전 SDK가 초기화되어 있는지 확인하세요.
+- **중복 호출 방지**: 재연결 중에는 추가적인 `reconnect()` 호출을 피하세요.
+- **사용자 피드백**: 재연결 시도 중임을 사용자에게 알려주세요.
+- **제한된 상태**: `IDLE`, `CONNECTING_FAILED`, `DESTROYED` 상태에서는 재연결이 불가능합니다. `destroy()` 호출 후에는 `init()`을 다시 호출해야 합니다.
+  :::
+
+:::tip 재연결 시도 횟수 제한
+SDK 내부적으로 오류가 있는 경우 무한 재연결이 발생할 수 있으므로, 클라이언트 애플리케이션에서 재연결 시도 횟수를 제한하는 것을 권장합니다. 일반적으로 3회 정도로 제한하고, 실패 시 지속적인 문제가 있는 경우 partnership@klleon.io로 문의하도록 안내하는 것이 좋습니다.
+:::
+
 ## 메시지 전송
 
 ### `KlleonChat.sendTextMessage(text)`

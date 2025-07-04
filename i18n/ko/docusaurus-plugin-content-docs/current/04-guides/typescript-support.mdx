@@ -36,7 +36,8 @@ type BaseStatus =
   | "STREAMING_FAILED"
   | "CONNECTED_FINISH"
   | "VIDEO_LOAD"
-  | "VIDEO_CAN_PLAY";
+  | "VIDEO_CAN_PLAY"
+  | "DESTROYED";
 
 type BaseLogLevelType = "debug" | "info" | "warn" | "error" | "silent";
 type BaseVoiceCodeType = "ko_kr" | "en_us" | "ja_jp" | "id_id";
@@ -60,6 +61,15 @@ enum ResponseChatType {
   START_LONG_WAIT = "START_LONG_WAIT",
   USER_SPEECH_STARTED = "USER_SPEECH_STARTED",
   USER_SPEECH_STOPPED = "USER_SPEECH_STOPPED",
+}
+
+enum ErrorCode {
+  SOCKET_FAILED = "SOCKET_FAILED",
+  STREAMING_FAILED = "STREAMING_FAILED",
+  STREAMING_RECONNECT_FAILED = "STREAMING_RECONNECT_FAILED",
+  VIDEO_ELEMENT_NOT_FOUND = "VIDEO_ELEMENT_NOT_FOUND",
+  SOCKET_DISCONNECTED_UNEXPECTEDLY = "SOCKET_DISCONNECTED_UNEXPECTEDLY",
+  STREAMING_DISCONNECTED_UNEXPECTEDLY = "STREAMING_DISCONNECTED_UNEXPECTEDLY",
 }
 
 export type Status = BaseStatus;
@@ -86,6 +96,11 @@ export interface ChatData {
   id: string;
 }
 
+export interface ErrorData {
+  code: ErrorCode;
+  message: string;
+}
+
 export interface ChangeAvatarOption {
   avatar_id: string;
   subtitle_code?: SubtitleCodeType;
@@ -98,6 +113,8 @@ export interface KlleonChat {
   destroy: () => void;
   onChatEvent: (callback: (data: ChatData) => void) => void;
   onStatusEvent: (callback: (status: Status) => void) => void;
+  onErrorEvent: (callback: (error: ErrorData) => void) => void;
+  reconnect: () => Promise<void>;
   sendTextMessage: (message: string) => void;
   startStt: () => void;
   endStt: () => void;
@@ -116,7 +133,7 @@ declare global {
     KlleonChat: KlleonChat;
   }
 
-  namespace JSX {
+  namespace React.JSX {
     interface IntrinsicElements {
       "avatar-container": React.DetailedHTMLProps<
         Omit<React.HTMLAttributes<HTMLElement>, "className"> & {
@@ -147,3 +164,11 @@ declare global {
   "include": ["KlleonSDK.d.ts"]
 }
 ```
+
+:::info React 버전별 JSX namespace
+
+- **React 19+** (`>=19.0.0`): `React.JSX` namespace 사용
+- **React 18-** (`~18.0.0`): `JSX` namespace 사용
+
+프로젝트의 `package.json`에서 React 버전을 확인하여 적절한 namespace를 사용하세요.
+:::

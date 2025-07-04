@@ -25,7 +25,7 @@ const config: Config = {
 
   scripts: [
     {
-      src: "https://web.sdk.klleon.io/1.2.0/klleon-chat.umd.js",
+      src: "https://web.sdk.klleon.io/1.3.0/klleon-chat.umd.js",
       async: true,
     },
   ],
@@ -145,7 +145,7 @@ const config: Config = {
               padding: 0;
               box-shadow: none;
             ">
-              1.2.0
+              1.3.0
               <span style="
                 display: inline-block;
                 margin-left: 4px;
