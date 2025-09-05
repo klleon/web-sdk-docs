@@ -1,0 +1,130 @@
+---
+id: readme-usage
+sidebar_position: 2
+title: usage
+sidebar_label: usage
+---
+
+import Table from "@site/src/components/table/Table";
+import { setup } from "@site/src/data/setup";
+
+## Page Creation
+
+### 1. Creating New Pages
+
+- Create `.mdx` files in `i18n/en/docusaurus-plugin-content-docs/current/` folder
+- Set metadata with frontmatter
+
+### 2. Frontmatter Configuration
+
+```yaml
+---
+id: page-id
+sidebar_position: 2
+title: Page Title
+sidebar_label: Sidebar Display Name
+---
+```
+
+## Multi-language Support
+
+### File Locations by Language
+
+- **Korean**: `i18n/ko/docusaurus-plugin-content-docs/current/`
+- **English**: `i18n/en/docusaurus-plugin-content-docs/current/`
+- **Japanese**: `i18n/ja/docusaurus-plugin-content-docs/current/`
+
+### Creating Translation Files
+
+1. Copy Korean files to other language folders
+2. Translate content to the target language
+3. Verify language settings in `docusaurus.config.ts`
+
+## Component Usage
+
+### 1. React Component Usage
+
+```jsx
+import Table from "@site/src/components/table/Table";
+
+<Table columns={setup.en.initOptionColumns} data={setup.en.initOptionData} />;
+```
+
+<Table columns={setup.en.initOptionColumns} data={setup.en.initOptionData} />
+
+## File Import Methods
+
+### Using `@site` Path
+
+Docusaurus allows importing files from the `src/` folder using `@site`.
+
+```jsx
+// Component import
+import Table from "@site/src/components/table/Table";
+
+// Data import
+import { setup } from "@site/src/data/setup";
+
+// Hook import
+import { useCustomHook } from "@site/src/hooks/customHooks";
+
+// Type import
+import { MyType } from "@site/src/types/global";
+```
+
+### Path Mapping
+
+- `@site` → `src/` folder
+- `@site/src/components/` → `src/components/`
+- `@site/src/data/` → `src/data/`
+- `@site/src/hooks/` → `src/hooks/`
+
+## Data Folder Structure
+
+### `src/data/setup.js`
+
+Contains configuration data for multi-language support.
+
+```javascript
+export const setup = {
+  ko: {
+    initOptionColumns: [...],  // Korean table columns
+    initOptionData: [...],     // Korean table data
+  },
+  en: {
+    initOptionColumns: [...],  // English table columns
+    initOptionData: [...],     // English table data
+  },
+  ja: {
+    initOptionColumns: [...],  // Japanese table columns
+    initOptionData: [...],     // Japanese table data
+  }
+};
+```
+
+### Usage Examples
+
+```jsx
+// Using Korean data
+<Table columns={setup.ko.initOptionColumns} data={setup.ko.initOptionData} />
+
+// Using English data
+<Table columns={setup.en.initOptionColumns} data={setup.en.initOptionData} />
+
+// Using Japanese data
+<Table columns={setup.ja.initOptionColumns} data={setup.ja.initOptionData} />
+```
+
+## Deployment Method
+
+### Current Deployment Settings
+
+- **Branch**: Automatic deployment from `main` branch
+- **Environment**: No separate environment configuration
+- **CI/CD**: Automated deployment through Amplify
+
+### Deployment Process
+
+1. **Code Push**: Push code to `main` branch
+2. **Auto Build**: Amplify automatically starts building
+3. **Auto Deploy**: Automatically deploys to production environment after build completion

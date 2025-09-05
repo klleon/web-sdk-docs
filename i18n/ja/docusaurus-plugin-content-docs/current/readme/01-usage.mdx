@@ -1,0 +1,135 @@
+---
+id: readme-usage
+sidebar_position: 2
+title: usage
+sidebar_label: usage
+---
+
+import Table from "@site/src/components/table/Table";
+import { setup } from "@site/src/data/setup";
+
+## ページ作成
+
+### 1. 新しいページの作成
+
+- `i18n/ja/docusaurus-plugin-content-docs/current/` フォルダに `.mdx` ファイルを作成
+- frontmatter でメタデータを設定
+
+### 2. Frontmatter 設定
+
+```yaml
+---
+id: page-id
+sidebar_position: 2
+title: ページタイトル
+sidebar_label: サイドバー表示名
+---
+```
+
+## 多言語サポート
+
+### 言語別ファイル位置
+
+- **韓国語**: `i18n/ko/docusaurus-plugin-content-docs/current/`
+- **英語**: `i18n/en/docusaurus-plugin-content-docs/current/`
+- **日本語**: `i18n/ja/docusaurus-plugin-content-docs/current/`
+
+### 翻訳ファイルの作成
+
+1. 韓国語ファイルを他の言語フォルダにコピー
+2. 内容を対象言語に翻訳
+3. `docusaurus.config.ts`で言語設定を確認
+
+## コンポーネント使用方法
+
+### 1. React コンポーネントの使用方法
+
+```jsx
+import Table from "@site/src/components/table/Table";
+
+<Table columns={setup.ja.initOptionColumns} data={setup.ja.initOptionData} />;
+```
+
+<Table columns={setup.ja.initOptionColumns} data={setup.ja.initOptionData} />
+
+## ファイル Import 方法
+
+### `@site`パスの使用
+
+Docusaurus では `@site` を使用して `src/` フォルダのファイルを import できます。
+
+```jsx
+// コンポーネントimport
+import Table from "@site/src/components/table/Table";
+
+// データimport
+import { setup } from "@site/src/data/setup";
+
+// フックimport
+import { useCustomHook } from "@site/src/hooks/customHooks";
+
+// タイプimport
+import { MyType } from "@site/src/types/global";
+```
+
+### パスマッピング
+
+- `@site` → `src/` フォルダ
+- `@site/src/components/` → `src/components/`
+- `@site/src/data/` → `src/data/`
+- `@site/src/hooks/` → `src/hooks/`
+
+## Data フォルダ構造
+
+### `src/data/setup.js`
+
+多言語サポートのための設定データを含みます。
+
+```javascript
+export const setup = {
+  ko: {
+    initOptionColumns: [...],  // 韓国語テーブルカラム
+    initOptionData: [...],     // 韓国語テーブルデータ
+  },
+  en: {
+    initOptionColumns: [...],  // 英語テーブルカラム
+    initOptionData: [...],     // 英語テーブルデータ
+  },
+  ja: {
+    initOptionColumns: [...],  // 日本語テーブルカラム
+    initOptionData: [...],     // 日本語テーブルデータ
+  }
+};
+```
+
+### 使用例
+
+```jsx
+// 韓国語データを使用
+<Table columns={setup.ko.initOptionColumns} data={setup.ko.initOptionData} />
+
+// 英語データを使用
+<Table columns={setup.en.initOptionColumns} data={setup.en.initOptionData} />
+
+// 日本語データを使用
+<Table columns={setup.ja.initOptionColumns} data={setup.ja.initOptionData} />
+```
+
+## デプロイ方法
+
+### 現在のデプロイ設定
+
+- **ブランチ**: `main` ブランチから自動デプロイ
+- **環境設定**: 別途環境設定なし
+- **CI/CD**: Amplify による自動デプロイ構築
+
+### デプロイプロセス
+
+1. **コードプッシュ**: `main` ブランチにコードをプッシュ
+2. **自動ビルド**: Amplify が自動的にビルドを開始
+3. **自動デプロイ**: ビルド完了後、自動的にプロダクション環境にデプロイ
+
+### デプロイ確認
+
+- デプロイ状況は Amplify コンソールで確認可能
+- デプロイ完了後、`https://docs.klleon.io`で変更内容を確認
