@@ -57,6 +57,7 @@ const config: Config = {
           editUrl:
             "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
           path: "i18n/ko/docusaurus-plugin-content-docs/current",
+          routeBasePath: "/docs",
         },
         blog: false,
         theme: {
@@ -85,6 +86,7 @@ const config: Config = {
       title: "",
       logo: {
         src: "img/klleon_logo_full.png",
+        href: "/docs/intro",
         width: 100,
         alt: "Klleon Logo",
         style: {
