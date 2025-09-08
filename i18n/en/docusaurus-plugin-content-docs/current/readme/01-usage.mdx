@@ -8,123 +8,123 @@ sidebar_label: usage
 import Table from "@site/src/components/table/Table";
 import { setup } from "@site/src/data/setup";
 
-## Page Creation
+## 페이지 생성
 
-### 1. Creating New Pages
+### 1. 새 페이지 만들기
 
-- Create `.mdx` files in `i18n/en/docusaurus-plugin-content-docs/current/` folder
-- Set metadata with frontmatter
+- `i18n/ko/docusaurus-plugin-content-docs/current/` 폴더에 `.mdx` 파일 생성
+- frontmatter로 메타데이터 설정
 
-### 2. Frontmatter Configuration
+### 2. Frontmatter 설정
 
 ```yaml
 ---
 id: page-id
 sidebar_position: 2
-title: Page Title
-sidebar_label: Sidebar Display Name
+title: 페이지 제목
+sidebar_label: 사이드바 표시명
 ---
 ```
 
-## Multi-language Support
+## 다국어 지원
 
-### File Locations by Language
+### 언어별 파일 위치
 
-- **Korean**: `i18n/ko/docusaurus-plugin-content-docs/current/`
-- **English**: `i18n/en/docusaurus-plugin-content-docs/current/`
-- **Japanese**: `i18n/ja/docusaurus-plugin-content-docs/current/`
+- **한국어**: `i18n/ko/docusaurus-plugin-content-docs/current/`
+- **영어**: `i18n/en/docusaurus-plugin-content-docs/current/`
+- **일본어**: `i18n/ja/docusaurus-plugin-content-docs/current/`
 
-### Creating Translation Files
+### 번역 파일 생성
 
-1. Copy Korean files to other language folders
-2. Translate content to the target language
-3. Verify language settings in `docusaurus.config.ts`
+1. 한국어 파일을 다른 언어 폴더로 복사
+2. 내용을 해당 언어로 번역
+3. `docusaurus.config.ts`에서 언어 설정 확인
 
-## Component Usage
+## 컴포넌트 사용법
 
-### 1. React Component Usage
+### 1. React 컴포넌트 사용법
 
 ```jsx
 import Table from "@site/src/components/table/Table";
 
-<Table columns={setup.en.initOptionColumns} data={setup.en.initOptionData} />;
+<Table columns={setup.ko.initOptionColumns} data={setup.ko.initOptionData} />;
 ```
 
-<Table columns={setup.en.initOptionColumns} data={setup.en.initOptionData} />
+<Table columns={setup.ko.initOptionColumns} data={setup.ko.initOptionData} />
 
-## File Import Methods
+## 파일 Import 방법
 
-### Using `@site` Path
+### `@site` 경로 사용
 
-Docusaurus allows importing files from the `src/` folder using `@site`.
+Docusaurus에서는 `@site`을 사용하여 `src/` 폴더의 파일들을 import할 수 있습니다.
 
 ```jsx
-// Component import
+// 컴포넌트 import
 import Table from "@site/src/components/table/Table";
 
-// Data import
+// 데이터 import
 import { setup } from "@site/src/data/setup";
 
-// Hook import
+// 훅 import
 import { useCustomHook } from "@site/src/hooks/customHooks";
 
-// Type import
+// 타입 import
 import { MyType } from "@site/src/types/global";
 ```
 
-### Path Mapping
+### 경로 매핑
 
-- `@site` → `src/` folder
+- `@site` → `src/` 폴더
 - `@site/src/components/` → `src/components/`
 - `@site/src/data/` → `src/data/`
 - `@site/src/hooks/` → `src/hooks/`
 
-## Data Folder Structure
+## Data 폴더 구조
 
 ### `src/data/setup.js`
 
-Contains configuration data for multi-language support.
+다국어 지원을 위한 설정 데이터를 포함합니다.
 
 ```javascript
 export const setup = {
   ko: {
-    initOptionColumns: [...],  // Korean table columns
-    initOptionData: [...],     // Korean table data
+    initOptionColumns: [...],  // 한국어 테이블 컬럼
+    initOptionData: [...],     // 한국어 테이블 데이터
   },
   en: {
-    initOptionColumns: [...],  // English table columns
-    initOptionData: [...],     // English table data
+    initOptionColumns: [...],  // 영어 테이블 컬럼
+    initOptionData: [...],     // 영어 테이블 데이터
   },
   ja: {
-    initOptionColumns: [...],  // Japanese table columns
-    initOptionData: [...],     // Japanese table data
+    initOptionColumns: [...],  // 일본어 테이블 컬럼
+    initOptionData: [...],     // 일본어 테이블 데이터
   }
 };
 ```
 
-### Usage Examples
+### 사용 예시
 
 ```jsx
-// Using Korean data
+// 한국어 데이터 사용
 <Table columns={setup.ko.initOptionColumns} data={setup.ko.initOptionData} />
 
-// Using English data
+// 영어 데이터 사용
 <Table columns={setup.en.initOptionColumns} data={setup.en.initOptionData} />
 
-// Using Japanese data
+// 일본어 데이터 사용
 <Table columns={setup.ja.initOptionColumns} data={setup.ja.initOptionData} />
 ```
 
-## Deployment Method
+## 배포 방법
 
-### Current Deployment Settings
+### 현재 배포 설정
 
-- **Branch**: Automatic deployment from `main` branch
-- **Environment**: No separate environment configuration
-- **CI/CD**: Automated deployment through Amplify
+- **브랜치**: `main` 브랜치에서 자동 배포
+- **환경 설정**: 별도 환경 설정 없음
+- **CI/CD**: Amplify를 통한 자동 배포 구축
 
-### Deployment Process
+### 배포 프로세스
 
-1. **Code Push**: Push code to `main` branch
-2. **Auto Build**: Amplify automatically starts building
-3. **Auto Deploy**: Automatically deploys to production environment after build completion
+1. **코드 푸시**: `main` 브랜치에 코드 푸시
+2. **자동 빌드**: Amplify가 자동으로 빌드 시작
+3. **자동 배포**: 빌드 완료 후 자동으로 프로덕션 환경에 배포

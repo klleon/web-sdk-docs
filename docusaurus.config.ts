@@ -3,32 +3,19 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
-  title: "Klleon Chat SDK - AI Avatar Chat JavaScript Library",
-  tagline:
-    "Build interactive AI avatars with real-time chat, LLM, and TTS capabilities",
+  title: "Klleon SDK",
+  tagline: "Build interactive AI avatars with real-time chat",
   favicon: "img/favicon.ico",
 
-  url: "https://docs.klleon.io",
+  url: "https://docs.ondevice.klleon.io",
   baseUrl: "/",
   trailingSlash: false,
   organizationName: "klleon", // Usually your GitHub org/user name.
-  projectName: "web-sdk-docs", // Usually your repo name.
+  projectName: "mobile-sdk-docs", // Usually your repo name.
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
-  customFields: {
-    sdkKey: process.env.REACT_APP_SDK_KEY || "APP-vN4Mh9vmHqtPbTDbDhCp",
-    avatarId:
-      process.env.REACT_APP_AVATAR_ID || "a5fe629d-0090-11ef-8ee1-0abbf354c5cc",
-  },
-
-  scripts: [
-    {
-      src: "https://web.sdk.klleon.io/1.2.0/klleon-chat.umd.js",
-      async: true,
-    },
-  ],
   i18n: {
     defaultLocale: "ko",
     locales: ["ko", "en", "ja"],
@@ -56,8 +43,6 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
           editUrl:
             "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-          path: "i18n/ko/docusaurus-plugin-content-docs/current",
-          routeBasePath: "/docs",
         },
         blog: false,
         theme: {
