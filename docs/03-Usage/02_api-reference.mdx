@@ -1,0 +1,195 @@
+---
+id: api-reference
+sidebar_position: 3
+title: api-reference
+sidebar_label: API 참조
+---
+# API 참조
+
+## 핵심 컴포넌드
+
+### KlleonOndeviceSdk
+
+모든 기능을 제공하는 메인 SDK 클래스입니다.
+
+```kotlin
+val klleonOndeviceSdk = KlleonOndeviceSdk()
+```
+
+### KlleonSdkView
+
+SDK 콘텐츠를 렌더링하기 위한 커스텀 Android View입니다.
+
+```kotlin
+@Composable
+fun SdkViewComponent() {
+    var workerView by remember { mutableStateOf<KlleonSdkView?>(null) }
+    
+    AndroidView(
+        factory = { context ->
+            KlleonSdkView(context).also { view ->
+                workerView = view
+            }
+        },
+        modifier = Modifier.fillMaxSize()
+    )
+}
+```
+
+## SDK 메서드
+
+### play()
+
+얼굴 인식 처리와 함께 비디오 재생을 시작합니다.
+
+```kotlin
+klleonOndeviceSdk.play(
+    activity: ComponentActivity,
+    view: KlleonSdkView,
+    videoPath: String,
+    facialPath: String,
+    sdkKey: String
+)
+```
+
+**매개변수:**
+- `activity`: ComponentActivity - 현재 액티비티 컨텍스트
+- `view`: KlleonSdkView - 렌더링을 위한 뷰 인스턴스
+- `videoPath`: String - 비디오 파일의 절대 경로 (.mp4)
+- `facialPath`: String - 얼굴 처리 파일의 절대 경로 (.npz)
+- `sdkKey`: String - 고유 SDK 식별자
+
+**예제:**
+```kotlin
+workerView?.let { view ->
+    klleonOndeviceSdk.play(
+        context as ComponentActivity,
+        view,
+        vpPath,
+        fpPath,
+        "SDK KEY"
+    )
+}
+```
+
+### finish()
+
+SDK를 중지하고 리소스를 정리합니다.
+
+```kotlin
+klleonOndeviceSdk.finish()
+```
+
+**사용법:**
+```kotlin
+Button(
+    onClick = { klleonOndeviceSdk.finish() }
+) {
+    Text("Stop")
+}
+```
+
+### sendMessage()
+
+SDK의 메시징 시스템을 통해 메시지를 전송합니다.
+
+```kotlin
+klleonOndeviceSdk.sendMessage(message: String)
+```
+
+**매개변수:**
+- `message`: String - 전송할 메시지 내용
+
+**예제:**
+```kotlin
+try {
+    klleonOndeviceSdk.sendMessage("Hello from app")
+} catch (e: Exception) {
+    Log.e("SDK", "Error sending message", e)
+}
+```
+
+### sendMessageEcho()
+
+SDK를 통해 에코 메시지를 전송합니다.
+
+```kotlin
+klleonOndeviceSdk.sendMessageEcho(message: String)
+```
+
+**매개변수:**
+- `message`: String - 에코할 메시지 내용
+
+**예제:**
+```kotlin
+try {
+    klleonOndeviceSdk.sendMessageEcho("Echo test")
+} catch (e: Exception) {
+    Log.e("SDK", "Error sending echo message", e)
+}
+```
+
+## 상태 관리
+
+### sdkState
+
+SDK 상태 업데이트를 JSON 문자열로 방출하는 Flow입니다.
+
+```kotlin
+klleonOndeviceSdk.sdkState: Flow<String>
+```
+
+**사용법:**
+```kotlin
+klleonOndeviceSdk.sdkState.collect { state ->
+    val messageToAdd = try {
+        val json = JSONObject(state)
+        json.getString("message")
+    } catch (t: Throwable) {
+        state.toString()
+    }
+    
+    // 상태 업데이트 처리
+    updateUI(messageToAdd)
+}
+```
+
+**상태 형식:**
+상태는 일반적으로 다음을 포함하는 JSON 문자열입니다:
+```json
+{
+  "message":"","chat_type":"ACTIVATE_VOICE","time":"2025-09-03T05:42:08.394975295","id":"99dd3ab3-53c4-4418-bee4-b1fbaea272aa"
+}
+```
+
+## 오류 처리
+
+모든 SDK 메서드는 try-catch 블록으로 감싸야 합니다:
+
+```kotlin
+try {
+    klleonOndeviceSdk.sendMessage(message)
+} catch (e: Exception) {
+    Log.e("KlleonSDK", "작업 실패", e)
+    // 적절하게 오류 처리
+}
+```
+
+## 스레딩
+
+- SDK 메서드는 메인 스레드에서 안전하게 호출할 수 있습니다
+- 상태 관찰은 코루틴 스코프에서 수행해야 합니다
+- 상태 변경으로 인한 UI 업데이트는 메인 스레드로 디스패치되어야 합니다
+
+## 라이프사이클 관리
+
+```kotlin
+class MainActivity : ComponentActivity() {
+    private val klleonOndeviceSdk = KlleonOndeviceSdk()
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        klleonOndeviceSdk.finish() // 리소스 정리
+    }
+}
+```

@@ -1,0 +1,156 @@
+---
+id: get-started
+sidebar_position: 3
+title: get-started
+sidebar_label: 시작하기
+---
+
+# 시작하기
+
+## 사전 요구사항
+
+Klleon Chat SDK를 사용하기 전에 다음 준비사항이 필요합니다:
+
+1.  **Kleon Studio 계정**: SDK 기능을 사용하려면 [Kleon Studio](https://www.studio.klleon.io/) 계정이 필요합니다. 계정이 없다면 먼저 가입해 주세요.
+2.  **SDK 키 발급**: 도메인 등록 후, 해당 도메인에서 사용할 고유한 `sdk_key`가 발급됩니다. 이 키는 SDK 초기화에 필요합니다.
+
+## 권한
+
+### AndroidManifest.xml
+
+`AndroidManifest.xml`에 필요한 권한을 추가하세요:
+
+```xml
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
+
+### 코드에서 권한 처리
+
+```kotlin
+class MainActivity : ComponentActivity() {
+    private val requiredPermissions = arrayOf(
+        Manifest.permission.RECORD_AUDIO
+    )
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        handlePermissionResults(permissions)
+    }
+
+    private fun checkPermissions(): Boolean {
+        return requiredPermissions.all { permission ->
+            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun requestPermissions() {
+        val permissionsToRequest = requiredPermissions.filter { permission ->
+            ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
+        }.toTypedArray()
+
+        if (permissionsToRequest.isNotEmpty()) {
+            permissionLauncher.launch(permissionsToRequest)
+        }
+    }
+
+    private fun handlePermissionResults(permissions: Map<String, Boolean>) {
+        val deniedPermissions = permissions.filter { !it.value }.keys
+
+        if (deniedPermissions.isEmpty()) {
+            Log.d("MainActivity", "모든 권한이 허용됨")
+            initializeApp()
+        } else {
+            Log.w("MainActivity", "권한이 거부됨: $deniedPermissions")
+            // 거부된 권한 처리
+        }
+    }
+}
+```
+
+## 에셋 파일
+
+### 필수 파일
+
+SDK에는 다음 에셋 파일이 필요합니다:
+- **비디오 파일**: `.mp4` 형식 (예: `loop_sample.mp4`)
+- **얼굴 처리 파일**: `.npz` 형식 (예: `loop_sample.npz`)
+
+### 에셋 관리
+
+에셋 파일을 `src/main/assets/`에 배치하고 캐시 디렉토리로 복사하세요:
+
+```kotlin
+private fun copyAssetToCache(fileName: String) {
+    try {
+        val assetManager = assets
+        val inputStream = assetManager.open(fileName)
+        val cacheFile = File(cacheDir, fileName)
+
+        if (!cacheFile.exists()) {
+            val outputStream = FileOutputStream(cacheFile)
+            inputStream.copyTo(outputStream)
+            outputStream.close()
+            Log.d("MainActivity", "$fileName을 캐시로 복사함: ${cacheFile.absolutePath}")
+        }
+        inputStream.close()
+    } catch (e: IOException) {
+        Log.e("MainActivity", "에셋 $fileName 복사 중 오류", e)
+    }
+}
+
+// 앱 시작 시 에셋 복사
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    
+    copyAssetToCache("loop_sample.mp4")
+    copyAssetToCache("loop_sample.npz")
+}
+```
+
+## SDK 초기화
+
+### 기본 설정
+
+```kotlin
+import io.klleon.ondevice.KlleonOndeviceSdk
+import io.klleon.ondevice.render.KlleonSdkView
+
+@RequiresApi(Build.VERSION_CODES.S)
+class MainActivity : ComponentActivity() {
+    private val klleonOndeviceSdk = KlleonOndeviceSdk()
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        if (checkPermissions()) {
+            initializeApp()
+        } else {
+            requestPermissions()
+        }
+    }
+
+    private fun initializeApp() {
+        setContent {
+            OndeviceSampleTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    WorkerScreen(klleonOndeviceSdk = klleonOndeviceSdk)
+                }
+            }
+        }
+    }
+}
+```
+
+## 다음 단계
+
+설정 완료 후:
+
+1. 사용 가능한 메서드는 [API 참조](api-reference)를 확인하세요
+2. 최적의 통합을 위해 [가이드](../Guides/guides)를 따르세요
+3. 구현 패턴은 [사용 예제](../Examples/examples)를 확인하세요
