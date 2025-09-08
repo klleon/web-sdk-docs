@@ -1,0 +1,396 @@
+---
+id: examples
+sidebar_position: 4
+title: android-examples
+sidebar_label: android examples
+---
+
+# 안드로이드 사용 예제
+
+## MainActivity 구현
+
+```kotlin
+@RequiresApi(Build.VERSION_CODES.S)
+class MainActivity : ComponentActivity() {
+    private val klleonOndeviceSdk = KlleonOndeviceSdk()
+
+    private val requiredPermissions = arrayOf(
+        Manifest.permission.RECORD_AUDIO
+    )
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        handlePermissionResults(permissions)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (checkPermissions()) {
+            initializeApp()
+        } else {
+            requestPermissions()
+        }
+    }
+
+    private fun initializeApp() {
+        setContent {
+            OndeviceSampleTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    WorkerScreen(klleonOndeviceSdk = klleonOndeviceSdk)
+                }
+            }
+        }
+
+        // 시작 시 에셋을 캐시 디렉토리로 복사
+        copyAssetToCache("loop_sample.mp4")
+        copyAssetToCache("loop_sample.npz")
+    }
+
+    private fun copyAssetToCache(fileName: String) {
+        try {
+            val assetManager = assets
+            val inputStream = assetManager.open(fileName)
+            val cacheFile = File(cacheDir, fileName)
+
+            if (!cacheFile.exists()) {
+                val outputStream = FileOutputStream(cacheFile)
+                inputStream.copyTo(outputStream)
+                outputStream.close()
+                Log.d("MainActivity", "$fileName을 캐시로 복사함: ${cacheFile.absolutePath}")
+            }
+            inputStream.close()
+        } catch (e: IOException) {
+            Log.e("MainActivity", "에셋 $fileName 복사 중 오류", e)
+        }
+    }
+}
+```
+
+## Compose UI 통합
+
+### WorkerScreen Composable
+
+```kotlin
+@RequiresApi(Build.VERSION_CODES.S)
+@Composable
+fun WorkerScreen(
+    klleonOndeviceSdk: KlleonOndeviceSdk,
+    viewModel: WorkerViewModel = viewModel()
+) {
+    val context = LocalContext.current
+    var workerView by remember { mutableStateOf<KlleonSdkView?>(null) }
+    var messageData by remember { mutableStateOf("") }
+
+    // 에셋 파일 경로
+    val vpPath = remember { File(context.cacheDir, "loop_sample.mp4").absolutePath }
+    val fpPath = remember { File(context.cacheDir, "loop_sample.npz").absolutePath }
+
+    // SDK 상태 수집
+    val accumulatedMessages by viewModel.accumulatedMessages.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.observeSdkState(klleonOndeviceSdk)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // SDK 상태 표시
+        Card(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Transparent
+            )
+        ) {
+            Column(
+                modifier = Modifier.padding(12.dp)
+            ) {
+                Text(
+                    text = accumulatedMessages,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Black.copy(alpha = 0.8f)
+                )
+            }
+        }
+
+        // 하단 콘텐츠
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // SDK 뷰
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+            ) {
+                AndroidView(
+                    factory = { context ->
+                        KlleonSdkView(context).also { view ->
+                            workerView = view
+                            Log.d("WorkerScreen", "KlleonSdkView 생성됨: $view")
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // 메시지 입력
+            OutlinedTextField(
+                value = messageData,
+                onValueChange = { messageData = it },
+                label = { Text("메시지") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // 제어 버튼
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        workerView?.let { view ->
+                            Log.d("WorkerScreen", "workerPlay $vpPath $fpPath $view")
+                            klleonOndeviceSdk.play(
+                                context as ComponentActivity, 
+                                view, 
+                                vpPath, 
+                                fpPath,
+                                "SDK KEY"
+                            )
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    enabled = workerView != null
+                ) {
+                    Text("재생")
+                }
+
+                Button(
+                    onClick = { klleonOndeviceSdk.finish() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("종료")
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        try {
+                            klleonOndeviceSdk.sendMessage(messageData)
+                        } catch (e: Exception) {
+                            Log.e("WorkerScreen", "메시지 전송 오류", e)
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("메시지 전송")
+                }
+
+                Button(
+                    onClick = {
+                        try {
+                            klleonOndeviceSdk.sendMessageEcho(messageData)
+                        } catch (e: Exception) {
+                            Log.e("WorkerScreen", "에코 전송 오류", e)
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("에코")
+                }
+            }
+        }
+    }
+}
+```
+
+## ViewModel 구현
+
+### WorkerViewModel
+
+```kotlin
+@RequiresApi(Build.VERSION_CODES.S)
+class WorkerViewModel : ViewModel() {
+    
+    private val _accumulatedMessages = MutableStateFlow("")
+    val accumulatedMessages: StateFlow<String> = _accumulatedMessages.asStateFlow()
+
+    fun observeSdkState(klleonOndeviceSdk: KlleonOndeviceSdk) {
+        viewModelScope.launch {
+            klleonOndeviceSdk.sdkState.collect { state ->
+                state.let {
+                    val messageToAdd = try {
+                        val json = JSONObject(state)
+                        json.getString("message")
+                    } catch (t: Throwable) {
+                        state.toString()
+                    }
+                    
+                    // 누적된 메시지에 새 메시지 추가
+                    if (messageToAdd.isNotBlank()) {
+                        val currentMessages = _accumulatedMessages.value
+                        val newMessages = if (currentMessages.isEmpty()) {
+                            messageToAdd
+                        } else {
+                            "$currentMessages\n$messageToAdd"
+                        }
+                        _accumulatedMessages.value = newMessages
+                    }
+                }
+            }
+        }
+    }
+    
+    fun clearMessages() {
+        _accumulatedMessages.value = ""
+    }
+}
+```
+
+## 최소 통합 예제
+
+간단한 구현을 위해:
+
+```kotlin
+@RequiresApi(Build.VERSION_CODES.S)
+@Composable
+fun SimpleSDKIntegration() {
+    val context = LocalContext.current
+    val klleonOndeviceSdk = remember { KlleonOndeviceSdk() }
+    var sdkView by remember { mutableStateOf<KlleonSdkView?>(null) }
+    
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // SDK View
+        AndroidView(
+            factory = { context ->
+                KlleonSdkView(context).also { view ->
+                    sdkView = view
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
+        
+        // 재생 버튼
+        Button(
+            onClick = {
+                sdkView?.let { view ->
+                    val videoPath = File(context.cacheDir, "loop_sample.mp4").absolutePath
+                    val facialPath = File(context.cacheDir, "loop_sample.npz").absolutePath
+                    
+                    klleonOndeviceSdk.play(
+                        context as ComponentActivity,
+                        view,
+                        videoPath,
+                        facialPath,
+                        "SDK key"
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = sdkView != null
+        ) {
+            Text("SDK 시작")
+        }
+    }
+}
+```
+
+## 상태 관찰 패턴
+
+```kotlin
+@Composable
+fun SDKStateObserver(klleonOndeviceSdk: KlleonOndeviceSdk) {
+    var currentState by remember { mutableStateOf("") }
+    
+    LaunchedEffect(klleonOndeviceSdk) {
+        klleonOndeviceSdk.sdkState.collect { state ->
+            currentState = try {
+                val json = JSONObject(state)
+                "상태: ${json.getString("message")}"
+            } catch (e: Exception) {
+                "원시 상태: $state"
+            }
+        }
+    }
+    
+    Text(
+        text = currentState,
+        modifier = Modifier.padding(16.dp)
+    )
+}
+```
+
+## 오류 처리 패턴
+
+```kotlin
+class SDKManager {
+    private val klleonOndeviceSdk = KlleonOndeviceSdk()
+    
+    fun safePlay(
+        activity: ComponentActivity,
+        view: KlleonSdkView,
+        videoPath: String,
+        facialPath: String,
+        sdkKey: String
+    ): Boolean {
+        return try {
+            // 입력 검증
+            if (!File(videoPath).exists()) {
+                Log.e("SDKManager", "비디오 파일을 찾을 수 없음: $videoPath")
+                return false
+            }
+            
+            if (!File(facialPath).exists()) {
+                Log.e("SDKManager", "얼굴 파일을 찾을 수 없음: $facialPath")
+                return false
+            }
+            
+            klleonOndeviceSdk.play(activity, view, videoPath, facialPath, sdkKey)
+            Log.d("SDKManager", "SDK 재생이 성공적으로 시작됨")
+            true
+        } catch (e: Exception) {
+            Log.e("SDKManager", "SDK 재생 시작 실패", e)
+            false
+        }
+    }
+    
+    fun safeSendMessage(message: String): Boolean {
+        return try {
+            if (message.isBlank()) {
+                Log.w("SDKManager", "빈 메시지 전송 시도")
+                return false
+            }
+            
+            klleonOndeviceSdk.sendMessage(message)
+            Log.d("SDKManager", "메시지 전송됨: $message")
+            true
+        } catch (e: Exception) {
+            Log.e("SDKManager", "메시지 전송 실패", e)
+            false
+        }
+    }
+}
+```
