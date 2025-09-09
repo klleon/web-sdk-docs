@@ -1,0 +1,195 @@
+---
+id: api-reference
+sidebar_position: 3
+title: API Reference
+sidebar_label: API Reference
+---
+# API Reference
+
+## Core Components
+
+### KlleonOndeviceSdk
+
+The main SDK class that provides all functionality.
+
+```kotlin
+val klleonOndeviceSdk = KlleonOndeviceSdk()
+```
+
+### KlleonSdkView
+
+A custom Android View for rendering SDK content.
+
+```kotlin
+@Composable
+fun SdkViewComponent() {
+    var workerView by remember { mutableStateOf<KlleonSdkView?>(null) }
+    
+    AndroidView(
+        factory = { context ->
+            KlleonSdkView(context).also { view ->
+                workerView = view
+            }
+        },
+        modifier = Modifier.fillMaxSize()
+    )
+}
+```
+
+## SDK Methods
+
+### play()
+
+Starts video playback with face recognition processing.
+
+```kotlin
+klleonOndeviceSdk.play(
+    activity: ComponentActivity,
+    view: KlleonSdkView,
+    videoPath: String,
+    facialPath: String,
+    sdkKey: String
+)
+```
+
+**Parameters:**
+- `activity`: ComponentActivity - Current activity context
+- `view`: KlleonSdkView - View instance for rendering
+- `videoPath`: String - Absolute path to video file (.mp4)
+- `facialPath`: String - Absolute path to face processing file (.npz)
+- `sdkKey`: String - Unique SDK identifier
+
+**Example:**
+```kotlin
+workerView?.let { view ->
+    klleonOndeviceSdk.play(
+        context as ComponentActivity,
+        view,
+        vpPath,
+        fpPath,
+        "SDK KEY"
+    )
+}
+```
+
+### finish()
+
+Stops the SDK and cleans up resources.
+
+```kotlin
+klleonOndeviceSdk.finish()
+```
+
+**Usage:**
+```kotlin
+Button(
+    onClick = { klleonOndeviceSdk.finish() }
+) {
+    Text("Stop")
+}
+```
+
+### sendMessage()
+
+Sends a message through the SDK's messaging system.
+
+```kotlin
+klleonOndeviceSdk.sendMessage(message: String)
+```
+
+**Parameters:**
+- `message`: String - Message content to send
+
+**Example:**
+```kotlin
+try {
+    klleonOndeviceSdk.sendMessage("Hello from app")
+} catch (e: Exception) {
+    Log.e("SDK", "Error sending message", e)
+}
+```
+
+### sendMessageEcho()
+
+Sends an echo message through the SDK.
+
+```kotlin
+klleonOndeviceSdk.sendMessageEcho(message: String)
+```
+
+**Parameters:**
+- `message`: String - Message content to echo
+
+**Example:**
+```kotlin
+try {
+    klleonOndeviceSdk.sendMessageEcho("Echo test")
+} catch (e: Exception) {
+    Log.e("SDK", "Error sending echo message", e)
+}
+```
+
+## State Management
+
+### sdkState
+
+A Flow that emits SDK state updates as JSON strings.
+
+```kotlin
+klleonOndeviceSdk.sdkState: Flow<String>
+```
+
+**Usage:**
+```kotlin
+klleonOndeviceSdk.sdkState.collect { state ->
+    val messageToAdd = try {
+        val json = JSONObject(state)
+        json.getString("message")
+    } catch (t: Throwable) {
+        state.toString()
+    }
+    
+    // Handle state updates
+    updateUI(messageToAdd)
+}
+```
+
+**State Format:**
+The state is typically a JSON string containing:
+```json
+{
+  "message":"","chat_type":"ACTIVATE_VOICE","time":"2025-09-03T05:42:08.394975295","id":"99dd3ab3-53c4-4418-bee4-b1fbaea272aa"
+}
+```
+
+## Error Handling
+
+All SDK methods should be wrapped in try-catch blocks:
+
+```kotlin
+try {
+    klleonOndeviceSdk.sendMessage(message)
+} catch (e: Exception) {
+    Log.e("KlleonSDK", "Operation failed", e)
+    // Handle error appropriately
+}
+```
+
+## Threading
+
+- SDK methods can be safely called from the main thread
+- State observation should be performed in a coroutine scope
+- UI updates from state changes should be dispatched to the main thread
+
+## Lifecycle Management
+
+```kotlin
+class MainActivity : ComponentActivity() {
+    private val klleonOndeviceSdk = KlleonOndeviceSdk()
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        klleonOndeviceSdk.finish() // Clean up resources
+    }
+}
+```

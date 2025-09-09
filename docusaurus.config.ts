@@ -94,7 +94,7 @@ const config: Config = {
               padding: 0;
               box-shadow: none;
             ">
-              1.2.0
+              0.1.2
               <span style="
                 display: inline-block;
                 margin-left: 4px;
