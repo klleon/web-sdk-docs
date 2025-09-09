@@ -1,0 +1,10 @@
+{
+  "logo.alt": {
+    "message": "Klleon Logo",
+    "description": "The alt text of navbar logo"
+  },
+  "item.label.docs": {
+    "message": "docs",
+    "description": "Navbar item with label docs"
+  }
+}

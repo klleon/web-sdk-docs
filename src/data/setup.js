@@ -83,6 +83,44 @@ export const setup = {
           "클레온 스튜디오의 End-User 생성 API를 통해 발급받은 사용자 세션 관리용 키입니다. 세션 시간 조절 등에 사용될 수 있습니다.",
       },
     ],
+    changeAvatarOptionColumns: [
+      { header: "parameter", label: "파라미터" },
+      { header: "type", label: "타입" },
+      { header: "required", label: "필수여부" },
+      { header: "default", label: "기본값" },
+      { header: "description", label: "설명" },
+    ],
+    changeAvatarOptionData: [
+      {
+        parameter: "avatar_id",
+        type: "string",
+        required: "O",
+        default: "-",
+        description: "변경할 아바타의 고유 ID",
+      },
+      {
+        parameter: "subtitle_code",
+        type: "string",
+        required: "X",
+        default: "최초 연결 값",
+        description:
+          "아바타 발화 자막 언어 설정입니다.\n지원 코드: `ko_kr` (한국어), `en_us` (영어), `ja_jp` (일본어), `id_id` (인도네시아어) 등",
+      },
+      {
+        parameter: "voice_code",
+        type: "string",
+        required: "X",
+        default: "최초 연결 값",
+        description: "아바타 발화 음성 언어 설정입니다.",
+      },
+      {
+        parameter: "voice_tts_speech_speed",
+        type: "number",
+        required: "X",
+        default: "최초 연결 값",
+        description: "아바타 발화 속도 조절 기능입니다.\n범위: 0.5 ~ 2.0",
+      },
+    ],
   },
   en: {
     initOptionColumns: [
@@ -168,6 +206,44 @@ export const setup = {
           "User session management key issued through Klleon Studio's End-User creation API. It can be used for session time adjustment, etc.",
       },
     ],
+    changeAvatarOptionColumns: [
+      { header: "parameter", label: "Parameter" },
+      { header: "type", label: "Type" },
+      { header: "required", label: "Required" },
+      { header: "default", label: "Default" },
+      { header: "description", label: "Description" },
+    ],
+    changeAvatarOptionData: [
+      {
+        parameter: "avatar_id",
+        type: "string",
+        required: "O",
+        default: "-",
+        description: "Unique ID of the avatar to be changed",
+      },
+      {
+        parameter: "subtitle_code",
+        type: "string",
+        required: "X",
+        default: "Initial connection value",
+        description:
+          "Avatar speech subtitle language setting.\nSupported codes: `ko_kr` (Korean), `en_us` (English), `ja_jp` (Japanese), `id_id` (Indonesian), etc.",
+      },
+      {
+        parameter: "voice_code",
+        type: "string",
+        required: "X",
+        default: "Initial connection value",
+        description: "Avatar speech voice language setting.",
+      },
+      {
+        parameter: "voice_tts_speech_speed",
+        type: "number",
+        required: "X",
+        default: "Initial connection value",
+        description: "Avatar speech speed control feature.\nRange: 0.5 ~ 2.0",
+      },
+    ],
   },
   ja: {
     initOptionColumns: [
@@ -251,6 +327,44 @@ export const setup = {
         default: "-",
         description:
           "クレオンスタジオのEnd-User生成APIを通じて発行されたユーザーセッション管理用キーです。セッション時間調整などに使用されることがあります。",
+      },
+    ],
+    changeAvatarOptionColumns: [
+      { header: "parameter", label: "パラメータ" },
+      { header: "type", label: "タイプ" },
+      { header: "required", label: "必須かどうか" },
+      { header: "default", label: "デフォルト値" },
+      { header: "description", label: "説明" },
+    ],
+    changeAvatarOptionData: [
+      {
+        parameter: "avatar_id",
+        type: "string",
+        required: "O",
+        default: "-",
+        description: "変更するアバターの固有ID",
+      },
+      {
+        parameter: "subtitle_code",
+        type: "string",
+        required: "X",
+        default: "初回接続値",
+        description:
+          "アバター発話字幕言語設定です。\nサポートコード: `ko_kr` (韓国語), `en_us` (英語), `ja_jp` (日本語), `id_id` (インドネシア語) など",
+      },
+      {
+        parameter: "voice_code",
+        type: "string",
+        required: "X",
+        default: "初回接続値",
+        description: "アバター発話音声言語設定です。",
+      },
+      {
+        parameter: "voice_tts_speech_speed",
+        type: "number",
+        required: "X",
+        default: "初回接続値",
+        description: "アバター発話速度調整機能です。\n範囲: 0.5 ~ 2.0",
       },
     ],
   },
