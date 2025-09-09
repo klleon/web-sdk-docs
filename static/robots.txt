@@ -1,21 +1,2 @@
 User-agent: *
 Allow: /
-
-# 이전 GitBook 경로 차단
-Disallow: /klleon-chat-api-and-sdk/
-
-# 제외할 경로들
-Disallow: /search
-Disallow: /_next/
-Disallow: /.docusaurus/
-
-# 메인 사이트맵만 (중복 제거)
-Sitemap: https://docs.klleon.io/sitemap.xml
-
-# 크롤링 속도 조절
-Crawl-delay: 1
-
-# Googlebot 최적화
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0

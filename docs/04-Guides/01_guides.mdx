@@ -1,0 +1,182 @@
+---
+id: guides
+sidebar_position: 3
+title: 개발 가이드
+sidebar_label: guides
+---
+
+### 1. 권한 관리
+- SDK 초기화 전에 항상 권한을 확인하세요
+- 사용자 친화적인 메시지로 권한 거부를 처리하세요
+- 필요한 권한에 대한 명확한 근거를 제공하세요
+- 다양한 Android 버전에서 권한 플로우를 테스트하세요
+
+```kotlin
+private fun showPermissionRationale() {
+    Toast.makeText(
+        this,
+        "이 앱이 제대로 작동하려면 오디오 권한이 필요합니다.",
+        Toast.LENGTH_LONG
+    ).show()
+}
+```
+
+### 2. 리소스 관리
+- SDK 사용 완료 시 `finish()`를 호출하여 리소스를 정리하세요
+- 더 나은 성능을 위해 에셋을 캐시 디렉토리로 복사하세요
+- 적절한 오류 처리로 파일 I/O 작업을 처리하세요
+- `onDestroy()`에서 리소스를 정리하세요
+
+```kotlin
+override fun onDestroy() {
+    super.onDestroy()
+    klleonOndeviceSdk.finish()
+}
+```
+
+### 3. 상태 관찰
+- ViewModel을 사용하여 SDK 상태 변경을 관찰하세요
+- 코루틴 스코프에서 상태 업데이트를 수집하세요
+- try-catch 블록으로 JSON 응답을 안전하게 파싱하세요
+- UI 변경을 위해 메인 스레드에서 상태 업데이트를 처리하세요
+
+### 4. 오류 처리
+- SDK 메서드 호출을 try-catch 블록으로 감싸세요
+- 디버깅을 위해 오류를 적절히 로깅하세요
+- 실패한 작업에 대해 사용자 피드백을 제공하세요
+- SDK 메서드 호출 전에 입력을 검증하세요
+
+```kotlin
+fun safeOperation() {
+    try {
+        klleonOndeviceSdk.sendMessage(message)
+    } catch (e: Exception) {
+        Log.e("SDK", "작업 실패", e)
+        showUserError("작업이 실패했습니다. 다시 시도해 주세요.")
+    }
+}
+```
+
+### 5. UI 통합
+- Compose에서 `AndroidView`를 사용하여 `KlleonSdkView`를 통합하세요
+- SDK 메서드 호출 전에 뷰가 제대로 초기화되었는지 확인하세요
+- 뷰 라이프사이클을 적절히 처리하세요
+- 다양한 화면 크기와 방향에서 UI를 테스트하세요
+
+## 성능 최적화
+
+
+### 메모리 관리
+```kotlin
+// Compose에서 remember를 사용하여 객체 재생성 방지
+val vpPath = remember { File(context.cacheDir, "loop_sample.mp4").absolutePath }
+```
+
+### 스레딩
+```kotlin
+// 상태 관찰을 위해 적절한 코루틴 스코프 사용
+viewModelScope.launch {
+    klleonOndeviceSdk.sdkState.collect { state ->
+        // 상태 업데이트 처리
+    }
+}
+```
+
+## 문제 해결
+
+### 일반적인 문제
+
+#### 1. 권한 거부됨
+**문제**: `RECORD_AUDIO` 권한이 허용되지 않음
+
+**해결책**: 
+- `AndroidManifest.xml`에 권한이 선언되어 있는지 확인
+- 권한 처리 로직 확인
+- 다양한 Android 버전에서 테스트
+
+#### 2. SDK 상태가 업데이트되지 않음
+**문제**: 상태 관찰이 작동하지 않음
+
+**해결책**:
+- ViewModel에서 상태 관찰이 제대로 설정되어 있는지 확인
+- 코루틴 스코프가 활성화되어 있는지 확인
+- 상태 수집이 시작되었는지 확인
+
+#### 3. 뷰가 준비되지 않음
+**문제**: `play()` 호출 전에 `KlleonSdkView`가 초기화되지 않음
+
+**해결책**:
+- `AndroidView` 팩토리에서 뷰 초기화 확인
+- 뷰가 준비되었을 때만 버튼 활성화
+- SDK 메서드 호출 전에 null 검사 추가
+
+### 디버깅 팁
+
+#### 상태 모니터링
+```kotlin
+// 모든 상태 변경 모니터링
+klleonOndeviceSdk.sdkState.collect { state ->
+    Log.d("SDKState", "상태 업데이트: $state")
+    
+    try {
+        val json = JSONObject(state)
+        val message = json.getString("message")
+        val type = json.optString("type", "unknown")
+        Log.d("SDKState", "파싱됨 - 타입: $type, 메시지: $message")
+    } catch (e: Exception) {
+        Log.w("SDKState", "상태 JSON 파싱 실패", e)
+    }
+}
+```
+
+## 테스트 전략
+
+### 단위 테스트
+```kotlin
+@Test
+fun testAssetCopying() {
+    // 에셋 파일 복사 로직 테스트
+    val testFile = File(context.cacheDir, "test.mp4")
+    copyAssetToCache("test.mp4")
+    assertTrue("에셋 파일이 존재해야 함", testFile.exists())
+}
+```
+
+### 통합 테스트
+```kotlin
+@Test
+fun testSDKInitialization() {
+    val sdk = KlleonOndeviceSdk()
+    assertNotNull("SDK가 초기화되어야 함", sdk)
+    
+    // 상태 관찰 테스트
+    val states = mutableListOf<String>()
+    sdk.sdkState.take(1).collect { state ->
+        states.add(state)
+    }
+    
+    assertTrue("초기 상태를 받아야 함", states.isNotEmpty())
+}
+```
+
+### UI 테스트
+```kotlin
+@Test
+fun testPlayButtonEnabled() {
+    composeTestRule.setContent {
+        WorkerScreen(klleonOndeviceSdk = mockSdk)
+    }
+    
+    // 초기에는 비활성화
+    composeTestRule
+        .onNodeWithText("Play")
+        .assertIsNotEnabled()
+    
+    // 뷰 초기화 후 활성화되어야 함
+    composeTestRule.waitUntil {
+        composeTestRule
+            .onNodeWithText("Play")
+            .isEnabled()
+    }
+}
+```

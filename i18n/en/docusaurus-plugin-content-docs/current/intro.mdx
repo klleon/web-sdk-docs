@@ -1,75 +1,40 @@
 ---
-
-id: intro
+id: Intro
 sidebar_position: 1
 title: Introduction
-sidebar_label: intro
-
+sidebar_label: Intro
 ---
 
-import Head from "@docusaurus/Head";
+# Klleon Ondevice SDK
 
-<Head>
-  <title>{`Introduction to Klleon Chat SDK - Real-Time AI Avatar Chat, LLM, TTS, Lip Sync`}</title>
-  <meta
-    name="description"
-    content="Klleon Chat SDK is a JavaScript library for easily implementing real-time avatar chat, speech synthesis (TTS), LLM integration, and lip sync in web applications. Start talking with avatars without any server setup."
-  />
-  <meta
-    name="keywords"
-    content="Klleon Chat SDK, Digital Human, AI Avatar, JavaScript SDK, Real-Time Chat, LLM, TTS, Lip Sync, Conversational AI, Web Avatar Chatbot, Klleon, AI Startup, Web-Based AI, Avatar Voice Chat, TypeScript Support"
-  />
-</Head>
-
-# Introduction to Klleon Chat SDK
-
-The Klleon Chat SDK is a JavaScript library designed to help you easily integrate Klleon's real-time interactive avatars into your web applications. With this SDK, you can build a live avatar chat interface using just a few lines of code—without needing to configure WebRTC or implement server-side logic.
+Klleon Ondevice SDK is a powerful SDK that provides on-device AI capabilities along with video processing and real-time messaging. With this SDK, you can easily integrate AI-based avatar chat functionality that communicates in real-time into your applications.
 
 ## Key Features
 
-- **Easy Integration**: Quickly set up the Klleon Chat SDK on your web page using a simple `<script>` tag, and integrate avatar features with an intuitive API.
-- **Real-Time Bidirectional Communication**: Delivers a real-time chat experience with support for both text and voice messages between users and avatars.
-- **Customizable UI**: Use the built-in avatar and chat UI components or build your own UI to match your brand identity.
-- **Extensive SDK Event Subscription**: Subscribe to key events such as status changes and chat updates to incorporate avatar behavior into your app logic.
-- **TypeScript Support**: Offers `.d.ts` type definition files for enhanced developer experience and type safety in TypeScript projects.
+### Video Processing
+- AI video playback
+- LLM-based TTS
+- High-performance on-device AI processing
 
-## Who Is This Document For?
+### Real-time Messaging
+- WebSocket-based real-time communication
+- Message sending and echo functionality
+- State management
 
-This documentation is intended for:
+## Documentation Structure
 
-- **Web Developers**: Developers who want to integrate Klleon's avatar chat features into their websites or web apps.
-- **Product Managers & Planners**: Those evaluating the capabilities of the Klleon Chat SDK to enhance their services with new interactive features.
-- **Anyone Curious**: Anyone interested in understanding what the Klleon Chat SDK is and how it can be used.
+This documentation is organized as follows:
 
-Through this document, you'll learn how to install and use the SDK—from basic setup to advanced use cases—and bring engaging avatar experiences into your product.
+- **[Setup](/docs/Setup/setup)**: SDK installation and project configuration
+- **[Getting Started](/docs/Usage/get-started)**: Basic setup and initialization
+- **[API Reference](/docs/Usage/api-reference)**: Detailed description of all methods and classes
+- **[Guides](/docs/Guides/guides)**: Best practices and development guidelines
+- **[Examples](/docs/Examples/examples)**: Real implementation examples and patterns
 
-## Communication Architecture
+### 🌟 Getting Started
 
-```mermaid
-%%{init: {"themeVariables": {"primaryColor": "#0C5EF0", "actorBorder":"#0C5EF0", "actorBkg":"#e3f2fd"}} }%%
-sequenceDiagram
-    participant Client as Client (Web/App)
-    participant Backend as Klleon Server
-    participant Engine as Real-Time Processing Engine
+Follow the [setup guide](/docs/Setup/setup) right now to integrate Klleon Ondevice SDK into your project. You can add powerful AI-based video processing capabilities to your app in just a few minutes.
 
-    Note over Client: Communication Flow of Klleon Chat SDK
+---
 
-    Client->>Backend: Request authentication and session
-    Backend->>Engine: Create and connect session
-    Engine-->>Backend: Session connected
-    Backend-->>Client: Return session info
-
-    rect rgb(227,242,253)
-    loop Chat/Voice Session
-        Client->>Backend: Send message/voice data
-        Backend->>Engine: Forward data
-        Engine-->>Backend: Return result (text/voice)
-        Backend-->>Client: Deliver result
-    end
-    end
-
-    Client->>Backend: Request session termination
-    Backend->>Engine: End session
-    Engine-->>Backend: Confirm termination
-    Backend-->>Client: Session closed
-```
+*Klleon Ondevice SDK follows the latest Android development standards and is continuously updated and improved.*
