@@ -115,7 +115,7 @@ const InitPage = () => {
           style={{
             width: "150px",
             height: "50px",
-            backgroundColor: "#0C5EF0",
+            backgroundColor: "var(--klleon-color-accent)",
             color: "white",
             borderRadius: "10px",
             border: "none",
