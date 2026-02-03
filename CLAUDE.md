@@ -59,9 +59,21 @@ docs/
 
 ### 다국어(i18n) 처리
 
-- **문서 콘텐츠**: `docs/`의 MDX 파일에 `<Tabs>`와 locale 분기로 언어별 콘텐츠를 하나의 파일에서 처리
+- **문서 콘텐츠**: `docs/`의 MDX 파일이 소스(한국어)이며, `i18n/en/`, `i18n/ja/` 디렉토리에 각 로케일 번역 파일이 위치
 - **UI 문자열**: `i18n/{ko,en,ja}/code.json`에 번역 키-값 저장
 - **데이터 테이블**: `src/data/setup.js`, `src/data/usage.js`에서 locale별 파라미터 설명을 객체로 관리
+
+### i18n 동기화 체크리스트
+
+`docs/` 소스(한국어) 수정 시 아래 체크리스트를 반드시 확인한다:
+
+- [ ] `i18n/en/docusaurus-plugin-content-docs/current/` 영어 번역 파일 동기화
+- [ ] `i18n/ja/docusaurus-plugin-content-docs/current/` 일본어 번역 파일 동기화
+- [ ] `src/data/setup.js` — `ko`, `en`, `ja` 3개 로케일 데이터 동기화
+- [ ] `src/data/usage.js` — `ko`, `en`, `ja` 3개 로케일 데이터 동기화
+- [ ] Mermaid 다이어그램 — 소스와 번역 파일의 flowchart/sequenceDiagram 구조 일치
+- [ ] Admonition 문법 — `:::tip`, `:::caution`, `:::info` 등이 `\:::` 이스케이프 없이 정상 표기
+- [ ] `npm run build` 후 `build/en/llms-full.txt`에 신규/수정 콘텐츠 포함 확인
 
 ### 홈페이지 구조
 

@@ -34,7 +34,6 @@ enum ResponseChatType {
   START_LONG_WAIT = "START_LONG_WAIT",
   USER_SPEECH_STARTED = "USER_SPEECH_STARTED",
   USER_SPEECH_STOPPED = "USER_SPEECH_STOPPED",
-  RATE_LIMIT = "RATE_LIMIT",
   ACTIVATE_VOICE = "ACTIVATE_VOICE",
 }
 
@@ -84,7 +83,6 @@ export interface KlleonChat {
   changeAvatar: (option: ChangeAvatarOption) => Promise<void>;
   clearMessageList: () => void;
   stopSpeech: () => void;
-  wakeUpAvatar: () => void;
 }
 
 export interface AvatarProps {
