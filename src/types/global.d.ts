@@ -34,6 +34,8 @@ enum ResponseChatType {
   START_LONG_WAIT = "START_LONG_WAIT",
   USER_SPEECH_STARTED = "USER_SPEECH_STARTED",
   USER_SPEECH_STOPPED = "USER_SPEECH_STOPPED",
+  RATE_LIMIT = "RATE_LIMIT",
+  ACTIVATE_VOICE = "ACTIVATE_VOICE",
 }
 
 export type Status = BaseStatus;
@@ -82,6 +84,18 @@ export interface KlleonChat {
   changeAvatar: (option: ChangeAvatarOption) => Promise<void>;
   clearMessageList: () => void;
   stopSpeech: () => void;
+  wakeUpAvatar: () => void;
+}
+
+export interface AvatarProps {
+  videoStyle?: import("react").CSSProperties;
+  volume?: number;
+}
+
+export interface ChatProps {
+  delay?: number;
+  type?: "voice" | "text";
+  isShowCount?: boolean;
 }
 
 // 전역 window 객체에 KlleonChat 타입 선언
@@ -91,16 +105,21 @@ declare global {
   }
 }
 
+// Web component 공통 속성 (class 등)
+interface WebComponentAttributes {
+  class?: string;
+}
+
 // React 19의 jsx-runtime 모듈 보강
 declare module "react/jsx-runtime" {
   namespace JSX {
     interface IntrinsicElements {
       "avatar-container": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & AvatarProps,
+        React.HTMLAttributes<HTMLElement> & AvatarProps & WebComponentAttributes,
         HTMLElement
       >;
       "chat-container": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & ChatProps,
+        React.HTMLAttributes<HTMLElement> & ChatProps & WebComponentAttributes,
         HTMLElement
       >;
     }

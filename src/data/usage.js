@@ -236,6 +236,16 @@ export const usage = {
         description:
           "SDK가 사용자 음성 입력이 멈춘 것을 감지했을 때 발생합니다.",
       },
+      {
+        chatType: "RATE_LIMIT",
+        description:
+          "서버 요청 속도 제한에 도달했을 때 발생합니다. 잠시 후 다시 시도해 주세요.",
+      },
+      {
+        chatType: "ACTIVATE_VOICE",
+        description:
+          "음성 입력이 활성화되었을 때 발생합니다. 이 상태에서는 아바타가 `VIDEO_CAN_PLAY`가 아니어도 채팅 입력이 가능합니다.",
+      },
     ],
   },
   en: {
@@ -479,6 +489,16 @@ export const usage = {
         description:
           "Occurs when the SDK detects that user voice input has stopped.",
       },
+      {
+        chatType: "RATE_LIMIT",
+        description:
+          "Occurs when the server request rate limit is reached. Please try again after a short while.",
+      },
+      {
+        chatType: "ACTIVATE_VOICE",
+        description:
+          "Occurs when voice input is activated. In this state, chat input is available even if the avatar is not in `VIDEO_CAN_PLAY` status.",
+      },
     ],
   },
   ja: {
@@ -720,6 +740,16 @@ export const usage = {
         chatType: "USER_SPEECH_STOPPED",
         description:
           "SDKがユーザー音声入力が停止したことを検出した時に発生します。",
+      },
+      {
+        chatType: "RATE_LIMIT",
+        description:
+          "サーバーリクエストのレート制限に達した時に発生します。しばらくしてから再度お試しください。",
+      },
+      {
+        chatType: "ACTIVATE_VOICE",
+        description:
+          "音声入力が有効化された時に発生します。この状態ではアバターが`VIDEO_CAN_PLAY`でなくてもチャット入力が可能です。",
       },
     ],
   },

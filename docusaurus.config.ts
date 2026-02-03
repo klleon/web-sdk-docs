@@ -15,7 +15,6 @@ const config: Config = {
   projectName: "web-sdk-docs", // Usually your repo name.
 
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
 
   customFields: {
     sdkKey: process.env.REACT_APP_SDK_KEY || "APP-vN4Mh9vmHqtPbTDbDhCp",
@@ -74,9 +73,33 @@ const config: Config = {
   themes: ["@docusaurus/theme-mermaid"],
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
   },
 
-  plugins: ["@docusaurus/theme-live-codeblock"],
+  plugins: [
+    "@docusaurus/theme-live-codeblock",
+    [
+      "@signalwire/docusaurus-plugin-llms-txt",
+      {
+        siteTitle: "Klleon Chat SDK",
+        siteDescription:
+          "AI Avatar Chat JavaScript Library - Web SDK for embedding AI avatar chat interfaces",
+        content: {
+          enableMarkdownFiles: false,
+          enableLlmsFullTxt: true,
+          includeDocs: true,
+          includeBlog: false,
+          includePages: false,
+          remarkGfm: true,
+          rehypeProcessTables: true,
+        },
+        depth: 1,
+        logLevel: 2,
+      },
+    ],
+  ],
 
   themeConfig: {
     metadata: [
@@ -150,8 +173,8 @@ const config: Config = {
                 display: inline-block;
                 margin-left: 4px;
                 background: none;
-                color: #238636;
-                border: 1.5px solid #238636;
+                color: #3579CC;
+                border: 1.5px solid #3579CC;
                 border-radius: 10px;
                 font-size: 0.5em;
                 font-weight: 700;

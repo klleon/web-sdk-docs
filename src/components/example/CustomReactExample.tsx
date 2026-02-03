@@ -1,13 +1,9 @@
 import Translate, { translate } from "@docusaurus/Translate";
-
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import { ChatData, ResponseChatType, Status } from "@site/src/types/global";
-import { CSSProperties, useEffect, useRef, useState } from "react";
-
-interface AvatarProps {
-  videoStyle?: CSSProperties;
-  volume?: number;
-}
+import type { AvatarProps, ChatData, Status } from "@site/src/types/global";
+import { ResponseChatType } from "@site/src/types/global";
+import { getLocaleCode } from "@site/src/utils/locale";
+import { useEffect, useRef, useState } from "react";
 
 const CustomReactExample = () => {
   const { i18n, siteConfig } = useDocusaurusContext();
@@ -90,26 +86,13 @@ const CustomReactExample = () => {
         }
       });
 
-      const getLocale = () => {
-        switch (i18n.currentLocale) {
-          case "ko":
-            return "ko_kr";
-          case "en":
-            return "en_us";
-          case "ja":
-            return "ja_jp";
-          case "id":
-            return "id_id";
-          default:
-            return "ko_kr";
-        }
-      };
+      const voiceCode = getLocaleCode(i18n.currentLocale);
 
       await KlleonChat.init({
         sdk_key: siteConfig.customFields.sdkKey as string,
         avatar_id: siteConfig.customFields.avatarId as string,
-        subtitle_code: getLocale(),
-        voice_code: getLocale(),
+        subtitle_code: voiceCode,
+        voice_code: voiceCode,
       });
       setGuideText(translate({ message: "연결이 완료되었습니다." }));
     },

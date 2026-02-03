@@ -1,19 +1,9 @@
 import Translate, { translate } from "@docusaurus/Translate";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useTimer } from "@site/src/hooks/customHooks";
-import { ChatData, Status } from "@site/src/types/global";
-import { useEffect, useRef, useState, CSSProperties } from "react";
-
-interface AvatarProps {
-  videoStyle?: CSSProperties;
-  volume?: number;
-}
-
-interface ChatProps {
-  delay?: number;
-  type?: "voice" | "text";
-  isShowCount?: boolean;
-}
+import type { AvatarProps, ChatProps, ChatData, Status } from "@site/src/types/global";
+import { getLocaleCode } from "@site/src/utils/locale";
+import { useEffect, useRef, useState } from "react";
 
 function App() {
   const { i18n, siteConfig } = useDocusaurusContext();
@@ -74,27 +64,14 @@ function App() {
       console.log("SDK Chat Event:", chatData);
     });
     try {
-      const getLocale = () => {
-        switch (i18n.currentLocale) {
-          case "ko":
-            return "ko_kr";
-          case "en":
-            return "en_us";
-          case "ja":
-            return "ja_jp";
-          case "id":
-            return "id_id";
-          default:
-            return "ko_kr";
-        }
-      };
+      const voiceCode = getLocaleCode(i18n.currentLocale);
 
       await KlleonChat.init({
         sdk_key: siteConfig.customFields.sdkKey as string,
         avatar_id: siteConfig.customFields.avatarId as string,
         log_level: "info",
-        subtitle_code: getLocale(),
-        voice_code: getLocale(),
+        subtitle_code: voiceCode,
+        voice_code: voiceCode,
       });
       console.log(translate({ message: "SDK 초기화 성공!" }));
     } catch (error) {

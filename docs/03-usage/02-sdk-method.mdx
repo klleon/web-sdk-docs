@@ -257,6 +257,30 @@ const App = () => {
 export default App;
 ```
 
+### `KlleonChat.wakeUpAvatar()`
+
+유휴(idle) 상태의 아바타를 다시 활성화합니다. 장시간 대기 등으로 아바타가 비활성 상태에 진입했을 때 사용합니다.
+
+**사용 예시:**
+
+```tsx title="App.tsx (wakeUpAvatar)"
+const App = () => {
+  const handleWakeUp = () => {
+    window.KlleonChat.wakeUpAvatar();
+  };
+
+  return (
+    <div>
+      <avatar-container />
+      <chat-container />
+      <button onClick={handleWakeUp}>아바타 깨우기</button>
+    </div>
+  );
+};
+
+export default App;
+```
+
 ## 에코 기능
 
 ### `KlleonChat.echo(text)`

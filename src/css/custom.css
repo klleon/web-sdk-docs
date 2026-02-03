@@ -6,26 +6,59 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #3579CC;
+  --ifm-color-primary-dark: #2F6DB9;
+  --ifm-color-primary-darker: #2C67AE;
+  --ifm-color-primary-darkest: #245590;
+  --ifm-color-primary-light: #4A87D1;
+  --ifm-color-primary-lighter: #548DD4;
+  --ifm-color-primary-lightest: #73A2DC;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  /* Accent (버튼, 인터랙티브 요소) */
+  --klleon-color-accent: var(--ifm-color-primary);
+  --klleon-color-accent-hover: var(--ifm-color-primary-dark);
+
+  /* Text */
+  --klleon-color-text-heading: #121212;
+  --klleon-color-text-body: #666666;
+  --klleon-color-text-muted: #555555;
+  --klleon-color-text-inverse: #FFFFFF;
+
+  /* Surface */
+  --klleon-color-surface-primary: #FFFFFF;
+  --klleon-color-surface-secondary: #F0F0F0;
+  --klleon-color-surface-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Shadow */
+  --klleon-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* Border */
+  --klleon-color-border: #CCCCCC;
+
+  /* CTA */
+  --klleon-color-cta-bg: #121212;
+  --klleon-color-cta-bg-hover: #333333;
+
+  /* Badge */
+  --klleon-color-badge: var(--ifm-color-primary);
+
+  /* Icon */
+  --klleon-color-icon-circle: #D4D5FF;
+  --klleon-color-icon-detail: #444444;
+  --klleon-color-icon-action: #121212;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme="dark"] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: #5A9BE6;
+  --ifm-color-primary-dark: #3E8AE2;
+  --ifm-color-primary-darker: #3082E0;
+  --ifm-color-primary-darkest: #1D6AC3;
+  --ifm-color-primary-light: #76ACEA;
+  --ifm-color-primary-lighter: #84B4EC;
+  --ifm-color-primary-lightest: #ADCEF3;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
@@ -38,14 +71,14 @@
   .loading-text {
     position: absolute;
     font-size: 1.5em;
-    color: #555;
+    color: var(--klleon-color-text-muted);
     padding: 50px;
   }
   .start-chat-button {
     width: 150px;
     height: 50px;
-    background-color: #0c5ef0;
-    color: #fff;
+    background-color: var(--klleon-color-accent);
+    color: var(--klleon-color-text-inverse);
     border-radius: 10px;
     font-size: 16px;
     font-weight: 600;
@@ -75,7 +108,7 @@
         .echo-input {
           width: 100%;
           height: 40px;
-          border: 1px solid #ccc;
+          border: 1px solid var(--klleon-color-border);
           border-radius: 4px;
           padding: 0 10px;
           font-size: 16px;
@@ -84,17 +117,17 @@
         .echo-button {
           width: 100%;
           height: 40px;
-          border: 1px solid #ccc;
+          border: 1px solid var(--klleon-color-border);
           border-radius: 4px;
           padding: 0 10px;
-          background-color: #0c5ef0;
-          color: #fff;
+          background-color: var(--klleon-color-accent);
+          color: var(--klleon-color-text-inverse);
           font-size: 16px;
           font-weight: 600;
           cursor: pointer;
           &:disabled {
-            background-color: #ccc;
-            color: #fff;
+            background-color: var(--klleon-color-border);
+            color: var(--klleon-color-text-inverse);
             cursor: not-allowed;
           }
         }
@@ -122,7 +155,7 @@
       flex: 1;
       overflow-y: auto;
       border-radius: 24px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--klleon-color-border);
       padding: 12px;
       gap: 12px;
       &::-webkit-scrollbar {
@@ -133,7 +166,7 @@
         flex-direction: column;
         gap: 12px;
         background: grey;
-        color: #fff;
+        color: var(--klleon-color-text-inverse);
         padding: 12px;
         border-radius: 12px;
       }
