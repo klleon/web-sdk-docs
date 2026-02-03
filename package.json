@@ -8,7 +8,7 @@
     "start:en": "dotenv -e .env.development docusaurus start --locale en",
     "start:ko": "dotenv -e .env.development docusaurus start --locale ko",
     "start:ja": "dotenv -e .env.development docusaurus start --locale ja",
-    "build": "dotenv -e .env.production docusaurus build",
+    "build": "dotenv -e .env.production docusaurus build && cp build/en/llms.txt build/llms.txt && cp build/en/llms-full.txt build/llms-full.txt",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
