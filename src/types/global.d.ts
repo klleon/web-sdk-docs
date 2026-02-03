@@ -34,6 +34,8 @@ enum ResponseChatType {
   START_LONG_WAIT = "START_LONG_WAIT",
   USER_SPEECH_STARTED = "USER_SPEECH_STARTED",
   USER_SPEECH_STOPPED = "USER_SPEECH_STOPPED",
+  RATE_LIMIT = "RATE_LIMIT",
+  ACTIVATE_VOICE = "ACTIVATE_VOICE",
 }
 
 export type Status = BaseStatus;
@@ -82,6 +84,7 @@ export interface KlleonChat {
   changeAvatar: (option: ChangeAvatarOption) => Promise<void>;
   clearMessageList: () => void;
   stopSpeech: () => void;
+  wakeUpAvatar: () => void;
 }
 
 // 전역 window 객체에 KlleonChat 타입 선언

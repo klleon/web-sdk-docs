@@ -170,14 +170,15 @@ flowchart TD
     D -->|실패| I[SOCKET_FAILED]
     D -->|성공| E[STREAMING_CONNECTED]
     E -->|실패| J[STREAMING_FAILED]
-    E -->|성공| F[VIDEO_LOAD]
+    E -->|성공| H[CONNECTED_FINISH]
+    H --> F[VIDEO_LOAD]
     F --> G[VIDEO_CAN_PLAY]
 
     %% 스타일 지정
     classDef success fill:#d3f9d8,stroke:#3adb76,stroke-width:2px,color:#000;
     classDef failure fill:#ffe3e3,stroke:#ff6b6b,stroke-width:2px,color:#000;
 
-    class D,E,F,G success;
+    class D,E,H,F,G success;
     class C,I,J failure;
 ```
 
