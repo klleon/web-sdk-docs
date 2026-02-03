@@ -87,6 +87,17 @@ export interface KlleonChat {
   wakeUpAvatar: () => void;
 }
 
+export interface AvatarProps {
+  videoStyle?: import("react").CSSProperties;
+  volume?: number;
+}
+
+export interface ChatProps {
+  delay?: number;
+  type?: "voice" | "text";
+  isShowCount?: boolean;
+}
+
 // 전역 window 객체에 KlleonChat 타입 선언
 declare global {
   interface Window {
@@ -94,16 +105,21 @@ declare global {
   }
 }
 
+// Web component 공통 속성 (class 등)
+interface WebComponentAttributes {
+  class?: string;
+}
+
 // React 19의 jsx-runtime 모듈 보강
 declare module "react/jsx-runtime" {
   namespace JSX {
     interface IntrinsicElements {
       "avatar-container": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & AvatarProps,
+        React.HTMLAttributes<HTMLElement> & AvatarProps & WebComponentAttributes,
         HTMLElement
       >;
       "chat-container": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & ChatProps,
+        React.HTMLAttributes<HTMLElement> & ChatProps & WebComponentAttributes,
         HTMLElement
       >;
     }

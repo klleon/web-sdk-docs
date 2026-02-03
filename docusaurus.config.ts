@@ -78,7 +78,28 @@ const config: Config = {
     },
   },
 
-  plugins: ["@docusaurus/theme-live-codeblock"],
+  plugins: [
+    "@docusaurus/theme-live-codeblock",
+    [
+      "@signalwire/docusaurus-plugin-llms-txt",
+      {
+        siteTitle: "Klleon Chat SDK",
+        siteDescription:
+          "AI Avatar Chat JavaScript Library - Web SDK for embedding AI avatar chat interfaces",
+        content: {
+          enableMarkdownFiles: false,
+          enableLlmsFullTxt: true,
+          includeDocs: true,
+          includeBlog: false,
+          includePages: false,
+          remarkGfm: true,
+          rehypeProcessTables: true,
+        },
+        depth: 1,
+        logLevel: 2,
+      },
+    ],
+  ],
 
   themeConfig: {
     metadata: [

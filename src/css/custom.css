@@ -27,8 +27,12 @@
   --klleon-color-text-inverse: #FFFFFF;
 
   /* Surface */
+  --klleon-color-surface-primary: #FFFFFF;
   --klleon-color-surface-secondary: #F0F0F0;
   --klleon-color-surface-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Shadow */
+  --klleon-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
 
   /* Border */
   --klleon-color-border: #CCCCCC;

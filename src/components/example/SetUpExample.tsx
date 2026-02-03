@@ -1,18 +1,9 @@
 import Translate, { translate } from "@docusaurus/Translate";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTimer } from "@site/src/hooks/customHooks";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-
-interface AvatarProps {
-  videoStyle?: CSSProperties;
-  volume?: number;
-}
-
-interface ChatProps {
-  delay?: number;
-  type?: "voice" | "text";
-  isShowCount?: boolean;
-}
+import type { AvatarProps, ChatProps } from "@site/src/types/global";
+import { getLocaleCode } from "@site/src/utils/locale";
 
 const InitPage = () => {
   const { i18n, siteConfig } = useDocusaurusContext();
@@ -75,27 +66,14 @@ const InitPage = () => {
         console.log("SDK Chat Event:", chatData);
       });
 
-      const getLocale = () => {
-        switch (i18n.currentLocale) {
-          case "ko":
-            return "ko_kr";
-          case "en":
-            return "en_us";
-          case "ja":
-            return "ja_jp";
-          case "id":
-            return "id_id";
-          default:
-            return "ko_kr";
-        }
-      };
+      const voiceCode = getLocaleCode(i18n.currentLocale);
 
       // 3. SDK 초기화
       await KlleonChat.init({
         sdk_key: siteConfig.customFields.sdkKey as string,
         avatar_id: siteConfig.customFields.avatarId as string,
-        subtitle_code: getLocale(),
-        voice_code: getLocale(),
+        subtitle_code: voiceCode,
+        voice_code: voiceCode,
         // custom_id: "YOUR_CUSTOM_ID",
         // user_key: "YOUR_USER_KEY",
         // voice_code: "ko_kr",
