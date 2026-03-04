@@ -87,11 +87,11 @@ export default App;
 
 ## 메시지 전송
 
-### `KlleonChat.sendTextMessage(text)`
+### `KlleonChat.sendTextMessage(message)`
 
 사용자가 입력한 텍스트 메시지를 아바타에게 전송합니다.
 
-- **text** (string, 필수): 아바타에게 전송할 텍스트 메시지입니다.
+- **message** (string, 필수): 아바타에게 전송할 텍스트 메시지입니다.
 
 **사용 예시:**
 
@@ -116,6 +116,9 @@ const App = () => {
       <button onClick={handleSend}>보내기</button>
     </div>
   );
+};
+
+export default App;
 ```
 
 ## 음성 입력 (STT: Speech-to-Text)
@@ -144,8 +147,7 @@ const App = () => {
     if (!isRecording.current) {
       window.KlleonChat.startStt();
       isRecording.current = true;
-    }
-    if (isRecording.current) {
+    } else {
       window.KlleonChat.endStt();
       isRecording.current = false;
     }
@@ -184,8 +186,7 @@ const App = () => {
     if (!isRecording.current) {
       window.KlleonChat.startStt();
       isRecording.current = true;
-    }
-    if (isRecording.current) {
+    } else {
       window.KlleonChat.endStt();
       isRecording.current = false;
     }
@@ -230,8 +231,7 @@ const App = () => {
     if (!isRecording.current) {
       window.KlleonChat.startStt();
       isRecording.current = true;
-    }
-    if (isRecording.current) {
+    } else {
       window.KlleonChat.endStt();
       isRecording.current = false;
     }
@@ -259,11 +259,11 @@ export default App;
 
 ## 에코 기능
 
-### `KlleonChat.echo(text)`
+### `KlleonChat.echo(message)`
 
-제공된 `text` 문자열을 아바타가 그대로 발화(TTS)하도록 요청합니다.
+제공된 `message` 문자열을 아바타가 그대로 발화(TTS)하도록 요청합니다.
 
-- **text** (string, 필수): 아바타가 발화할 문자열 메시지입니다.
+- **message** (string, 필수): 아바타가 발화할 문자열 메시지입니다.
 
 **사용 예시:**
 
@@ -288,6 +288,9 @@ const App = () => {
       <button onClick={handleSend}>보내기</button>
     </div>
   );
+};
+
+export default App;
 ```
 
 ### `KlleonChat.startAudioEcho(audio)` / `KlleonChat.endAudioEcho()`
@@ -332,7 +335,7 @@ const App = () => {
     try {
       // 여러 오디오를 연속으로 전송
       for (const audio of audioList) {
-        await window.KlleonChat.startAudioEcho(audio);
+        window.KlleonChat.startAudioEcho(audio);
         console.log("오디오 전송됨:", audio);
       }
 
@@ -410,6 +413,9 @@ const App = () => {
       <button onClick={handleChangeAvatar}>아바타 변경</button>
     </div>
   );
+};
+
+export default App;
 ```
 
 ## 메시지 목록 관리
@@ -433,4 +439,7 @@ const App = () => {
       <button onClick={handleClearMessageList}>메시지 목록 초기화</button>
     </div>
   );
+};
+
+export default App;
 ```

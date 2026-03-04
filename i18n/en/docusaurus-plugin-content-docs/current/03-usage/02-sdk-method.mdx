@@ -85,11 +85,11 @@ export default App;
 
 ## Sending Messages
 
-### `KlleonChat.sendTextMessage(text)`
+### `KlleonChat.sendTextMessage(message)`
 
 Sends a user-entered text message to the avatar.
 
-- **text** (string, required): The text message to send to the avatar.
+- **message** (string, required): The text message to send to the avatar.
 
 **Usage Example:**
 
@@ -115,6 +115,8 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```
 
 ## Voice Input (STT: Speech-to-Text)
@@ -143,8 +145,7 @@ const App = () => {
     if (!isRecording.current) {
       window.KlleonChat.startStt();
       isRecording.current = true;
-    }
-    if (isRecording.current) {
+    } else {
       window.KlleonChat.endStt();
       isRecording.current = false;
     }
@@ -183,8 +184,7 @@ const App = () => {
     if (!isRecording.current) {
       window.KlleonChat.startStt();
       isRecording.current = true;
-    }
-    if (isRecording.current) {
+    } else {
       window.KlleonChat.endStt();
       isRecording.current = false;
     }
@@ -229,8 +229,7 @@ const App = () => {
     if (!isRecording.current) {
       window.KlleonChat.startStt();
       isRecording.current = true;
-    }
-    if (isRecording.current) {
+    } else {
       window.KlleonChat.endStt();
       isRecording.current = false;
     }
@@ -258,11 +257,11 @@ export default App;
 
 ## Echo Feature
 
-### `KlleonChat.echo(text)`
+### `KlleonChat.echo(message)`
 
-Requests the avatar to speak the provided `text` string directly via TTS.
+Requests the avatar to speak the provided `message` string directly via TTS.
 
-- **text** (string, required): The text message for the avatar to speak.
+- **message** (string, required): The text message for the avatar to speak.
 
 **Usage Example:**
 
@@ -288,6 +287,8 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```
 
 ### `KlleonChat.startAudioEcho(audio)` / `KlleonChat.endAudioEcho()`
@@ -332,7 +333,7 @@ const App = () => {
     try {
       // Send multiple audio segments consecutively
       for (const audio of audioList) {
-        await window.KlleonChat.startAudioEcho(audio);
+        window.KlleonChat.startAudioEcho(audio);
         console.log("Audio sent:", audio);
       }
 
@@ -411,6 +412,8 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```
 
 ## Message List Management
@@ -435,4 +438,6 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```

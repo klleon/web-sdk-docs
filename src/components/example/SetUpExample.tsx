@@ -32,7 +32,9 @@ const InitPage = () => {
     }
 
     return () => {
-      KlleonChat.destroy();
+      if (window.KlleonChat) {
+        window.KlleonChat.destroy();
+      }
     };
   }, []);
 

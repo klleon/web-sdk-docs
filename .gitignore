@@ -18,3 +18,30 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Claude Code
+.claude/
+
+# Playwright MCP
+.playwright-mcp/
+
+# Plan docs
+plan/
+
+# Test screenshots
+lit-attr-test-result.png
+react-basic-test.png
+react-custom-test.png
+vanilla-test-initial.png
+vanilla-js-test-result.png
+react-base-test-style.png
+react-base-before-start.png
+react-base-test-final.png
+custom-react-initial.png
+custom-react-final.png
+vanilla-before-clear.png
+vanilla-after-clear.png
+
+# Reports
+scan-report.md
+diff-version.md

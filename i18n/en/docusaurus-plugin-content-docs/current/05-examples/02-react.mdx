@@ -34,9 +34,9 @@ Add the SDK script inside the `<head>` tag of your `public/index.html` file.
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    {/* ... other meta tags and links ... */}
+    <!-- ... other meta tags and links ... -->
     <title>React + Klleon Chat SDK</title>
-    {/* TODO: Replace {VERSION} with the actual SDK version (e.g., 1.2.0) */}
+    <!-- TODO: Replace {VERSION} with the actual SDK version (e.g., 1.3.0) -->
     <script src="https://web.sdk.klleon.io/{VERSION}/klleon-chat.umd.js"></script>
   </head>
   <body>
@@ -133,8 +133,9 @@ Klleon Chat SDK provides TypeScript declaration files. If you include these `.d.
 </details>
 
 ```tsx title="src/App.tsx"
-import { ChatData, Status } from "@site/src/types/global";
-import { useEffect, useRef, useState, CSSProperties } from "react";
+// Types are provided by KlleonSDK.d.ts. (See the TypeScript Guide)
+import type { ChatData, Status } from "./KlleonSDK";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 // TODO: Replace with your actual SDK key and Avatar ID
 const SDK_KEY = "YOUR_SDK_KEY";
@@ -187,6 +188,10 @@ function App() {
 
     KlleonChat.onChatEvent((chatData: ChatData) => {
       console.log("SDK Chat Event:", chatData);
+    });
+
+    KlleonChat.onErrorEvent((error: { code: string; message: string }) => {
+      console.error("SDK Error Event:", error.code, error.message);
     });
     try {
       await KlleonChat.init({

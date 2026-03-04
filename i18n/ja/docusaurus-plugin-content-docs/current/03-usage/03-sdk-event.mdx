@@ -12,14 +12,14 @@ import { usage } from "@site/src/data/usage";
 import Head from "@docusaurus/Head";
 
 <Head>
-  <title>{`Klleon Chat SDK イベント処理 - onChatEvent, onStatusEvent の使い方`}</title>
+  <title>{`Klleon Chat SDK イベント処理 - onChatEvent, onStatusEvent, onErrorEvent の使い方`}</title>
   <meta
     name="description"
-    content="Klleon Chat SDKが提供するonChatEventとonStatusEventを活用してアバターの状態変化やチャットメッセージを処理する方法を案内します。VIDEO_CAN_PLAY、chat_type、statusの流れも詳しく解説しています。"
+    content="Klleon Chat SDKが提供するonChatEvent、onStatusEvent、onErrorEventを活用してアバターの状態変化、チャットメッセージ、エラーを処理する方法を案内します。ErrorCode別の発生条件とエラーイベントフローも詳しく解説しています。"
   />
   <meta
     name="keywords"
-    content="Klleon Chat SDK, イベント処理, onChatEvent, onStatusEvent, statusイベント, VIDEO_CAN_PLAY, チャットイベント, chat_type, STATUSフロー, デジタルヒューマンSDK, クレオンSDK, リアルタイムチャットイベント, JavaScriptイベントリスナー"
+    content="Klleon Chat SDK, イベント処理, onChatEvent, onStatusEvent, statusイベント, VIDEO_CAN_PLAY, チャットイベント, chat_type, STATUSフロー, デジタルヒューマンSDK, クレオンSDK, リアルタイムチャットイベント, JavaScriptイベントリスナー, onErrorEvent, エラーイベント"
   />
 </Head>
 
@@ -145,7 +145,7 @@ window.KlleonChat.onStatusEvent(handleSdkStatus);
 
 `VIDEO_CAN_PLAY` でない場合にメソッドを呼び出すと、期待通りに動作しないか、エラーが発生する可能性があります。
 
-なお、`KlleonChat.init()` および `onChatEvent`、`onStatusEvent` の登録はこの条件の対象外です。
+なお、`KlleonChat.init()` および `onChatEvent`、`onStatusEvent`、`onErrorEvent` の登録はこの条件の対象外です。
 :::
 
 #### `Status` イベント引数の詳細
@@ -171,9 +171,8 @@ flowchart TD
     B -->|失敗| C[CONNECTING_FAILED]
     B -->|成功| D[SOCKET_CONNECTED]
     D -->|失敗| I[SOCKET_FAILED]
-    D -->|成功| E[STREAMING_CONNECTED]
-    E -->|失敗| J[STREAMING_FAILED]
-    E -->|成功| H[CONNECTED_FINISH]
+    D -->|成功| H[CONNECTED_FINISH]
+    D -->|失敗| J[STREAMING_FAILED]
     H --> F[VIDEO_LOAD]
     F --> G[VIDEO_CAN_PLAY]
 
@@ -181,10 +180,61 @@ flowchart TD
     classDef success fill:#d3f9d8,stroke:#3adb76,stroke-width:2px,color:#000;
     classDef failure fill:#ffe3e3,stroke:#ff6b6b,stroke-width:2px,color:#000;
 
-    class D,E,H,F,G success;
+    class D,H,F,G success;
     class C,I,J failure;
 ```
 
+---
+
+### `KlleonChat.onErrorEvent(callback)`
+
+SDK 内部で発生するエラーを受信するためのコールバック関数を登録します。ネットワークエラー、メディア再生の失敗など、さまざまなエラー状況を検知して処理できます。
+
+- **callback** (`(error: ErrorData) => void`, 必須): `ErrorData` オブジェクト（`{ code: ErrorCode; message: string }`）を引数に取るコールバック関数です。
+
+```javascript
+function handleError(error) {
+  console.error("SDK エラー発生:", error.code, error.message);
+}
+
+window.KlleonChat.onErrorEvent(handleError);
+```
+
+#### `ErrorCode` の詳細
+
+エラーコードは、**初期化フェーズ**（`init()` 呼び出し時に発生）と**ランタイムフェーズ**（`VIDEO_CAN_PLAY` 以降に発生）に分類されます。
+
+<Table columns={usage.ja.errorCodeColumns} data={usage.ja.errorCodeData} />
+
+#### エラーイベントフロー
+
+```mermaid
+flowchart TD
+    subgraph INIT["初期化フェーズ"]
+        A["KlleonChat.init()"] --> B{WebSocket 接続}
+        B -->|失敗| C["SOCKET_FAILED"]
+        B -->|成功| D{ストリーミング接続}
+        D -->|"失敗 / タイムアウト(10秒)"| E["STREAMING_FAILED"]
+        D -->|成功| F["VIDEO_CAN_PLAY ✓"]
+    end
+
+    subgraph RUNTIME["ランタイムフェーズ"]
+        F --> G{接続モニタリング}
+        G -->|"avatar-container 未検出"| H["VIDEO_ELEMENT_NOT_FOUND"]
+        G -->|"WebSocket エラー"| I["SOCKET_DISCONNECTED_UNEXPECTEDLY"]
+        G -->|"ストリーミング再接続失敗"| J["STREAMING_RECONNECT_FAILED"]
+        G -->|"ストリーミング切断"| K["STREAMING_DISCONNECTED_UNEXPECTEDLY"]
+    end
+
+    classDef init fill:#ffe3e3,stroke:#ff6b6b,stroke-width:2px,color:#000;
+    classDef runtime fill:#fff3bf,stroke:#ffc107,stroke-width:2px,color:#000;
+    classDef success fill:#d3f9d8,stroke:#3adb76,stroke-width:2px,color:#000;
+
+    class C,E init;
+    class H,I,J,K runtime;
+    class F success;
+```
+
 :::info コールバックの再登録
-`onChatEvent` または `onStatusEvent` を同一のイベントタイプに対して複数回呼び出すと、最後に登録されたコールバック関数のみが有効になります。つまり、新しいコールバックを登録すると以前のものは自動的に解除されます。明示的な `off` メソッドは提供されていません。
+`onChatEvent`、`onStatusEvent` または `onErrorEvent` を同一のイベントタイプに対して複数回呼び出すと、最後に登録されたコールバック関数のみが有効になります。つまり、新しいコールバックを登録すると以前のものは自動的に解除されます。明示的な `off` メソッドは提供されていません。
 :::

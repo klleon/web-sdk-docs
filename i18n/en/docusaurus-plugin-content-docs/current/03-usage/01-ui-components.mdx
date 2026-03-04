@@ -99,9 +99,9 @@ useEffect(() => {
 :::tip How to Use Web Component Props
 **In HTML:**
 
-- `video-style='{"borderRadius": "12px"}'`
-- `is-show-count` (true)
-- `is-show-count="false"` (false)
+- `videostyle='{"borderRadius": "12px"}'`
+- `isshowcount` (true)
+- `isshowcount="false"` (false)
 
 **In JavaScript:**
 
@@ -113,7 +113,7 @@ useEffect(() => {
 - `ref.current.videoStyle = { borderRadius: "12px" }`
 - `ref.current.isShowCount = true`
 
-Web components use kebab-case in HTML and camelCase in JavaScript.
+HTML attribute names are the lowercased versions of camelCase property names (`videoStyle` → `videostyle`). In JavaScript/React, use camelCase as-is.
 :::
 
 ## UI Component Integration Example

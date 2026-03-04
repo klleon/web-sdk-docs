@@ -34,7 +34,6 @@ type BaseStatus =
   | "CONNECTING_FAILED"
   | "SOCKET_CONNECTED"
   | "SOCKET_FAILED"
-  | "STREAMING_CONNECTED"
   | "STREAMING_FAILED"
   | "CONNECTED_FINISH"
   | "VIDEO_LOAD"
@@ -62,6 +61,11 @@ enum ResponseChatType {
   START_LONG_WAIT = "START_LONG_WAIT",
   USER_SPEECH_STARTED = "USER_SPEECH_STARTED",
   USER_SPEECH_STOPPED = "USER_SPEECH_STOPPED",
+  ACTIVATE_VOICE = "ACTIVATE_VOICE",
+  RATE_LIMIT = "RATE_LIMIT",
+  HANDOVER_START = "HANDOVER_START",
+  HANDOVER_SUCCESS = "HANDOVER_SUCCESS",
+  HANDOVER_FAIL = "HANDOVER_FAIL",
 }
 
 export type Status = BaseStatus;
@@ -88,6 +92,20 @@ export interface ChatData {
   id: string;
 }
 
+export enum ErrorCode {
+  SOCKET_FAILED = "SOCKET_FAILED",
+  STREAMING_FAILED = "STREAMING_FAILED",
+  STREAMING_RECONNECT_FAILED = "STREAMING_RECONNECT_FAILED",
+  VIDEO_ELEMENT_NOT_FOUND = "VIDEO_ELEMENT_NOT_FOUND",
+  SOCKET_DISCONNECTED_UNEXPECTEDLY = "SOCKET_DISCONNECTED_UNEXPECTEDLY",
+  STREAMING_DISCONNECTED_UNEXPECTEDLY = "STREAMING_DISCONNECTED_UNEXPECTEDLY",
+}
+
+export interface ErrorData {
+  code: ErrorCode;
+  message: string;
+}
+
 export interface ChangeAvatarOption {
   avatar_id: string;
   subtitle_code?: SubtitleCodeType;
@@ -100,6 +118,7 @@ export interface KlleonChat {
   destroy: () => void;
   onChatEvent: (callback: (data: ChatData) => void) => void;
   onStatusEvent: (callback: (status: Status) => void) => void;
+  onErrorEvent: (callback: (error: ErrorData) => void) => void;
   sendTextMessage: (message: string) => void;
   startStt: () => void;
   endStt: () => void;

@@ -8,7 +8,7 @@ Klleon Chat SDK 공식 문서 사이트. Docusaurus 3.9.2 + React 19 + TypeScrip
 
 - 배포 URL: https://docs.klleon.io
 - 기본 로케일: `ko` (한국어)
-- SDK 현재 버전: 1.2.0
+- SDK 현재 버전: 1.3.0
 - 패키지 매니저: **npm** (yarn 사용 금지, `yarn.lock` 삭제됨)
 - Node.js: **>= 20.0** 필수 (`engines` 필드로 강제)
 
@@ -54,7 +54,7 @@ docs/
 ├── 03-usage/              # API 사용법
 ├── 04-guides/             # 가이드 (TypeScript 지원 등)
 ├── 05-examples/           # Vanilla JS / React 예제
-└── 06-changelog/          # 버전별 변경 이력 (v1.0.0 ~ v1.2.0)
+└── 06-changelog/          # 버전별 변경 이력 (v1.0.0 ~ v1.3.0)
 ```
 
 ### 다국어(i18n) 처리
@@ -112,7 +112,7 @@ src/components/home/
 
 ### SDK 연동
 
-SDK는 `docusaurus.config.ts`의 `scripts` 필드에서 UMD 번들(`https://web.sdk.klleon.io/1.2.0/klleon-chat.umd.js`)로 로드된다. `window.KlleonChat`으로 전역 접근하며 커스텀 웹 컴포넌트(`<avatar-container>`, `<chat-container>`)를 사용한다.
+SDK는 `docusaurus.config.ts`의 `scripts` 필드에서 UMD 번들(`https://web.sdk.klleon.io/1.3.0/klleon-chat.umd.js`)로 로드된다. `window.KlleonChat`으로 전역 접근하며 커스텀 웹 컴포넌트(`<avatar-container>`, `<chat-container>`)를 사용한다.
 
 ### 환경변수
 
@@ -144,6 +144,10 @@ Primary 컬러는 `#3579CC` (파란색 계열)이며, Docusaurus Infima의 `--if
 1. `src/css/custom.css`의 `:root` 블록에 `--klleon-color-{카테고리}-{역할}` 형태로 변수를 추가한다.
 2. 컴포넌트에서는 `var(--klleon-color-...)` 형태로만 참조한다.
 3. Mermaid 다이어그램 등 MDX 인라인 스타일에서도 동일한 hex 값을 사용할 경우, 해당 값을 CSS 변수 정의와 동기화한다.
+
+### CI/CD
+
+- **Context7 문서 리프레시**: `.github/workflows/context7-refresh.yml` — `docs/`, `i18n/`, `src/data/` 경로에 변경이 push되면 Context7에 등록된 LLM 문서를 자동 리프레시한다. `workflow_dispatch`로 수동 실행도 가능하다.
 
 ## Key Conventions
 

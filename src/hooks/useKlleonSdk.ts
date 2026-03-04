@@ -22,33 +22,46 @@ export function useKlleonSdk({
   const avatarContainerRef = useRef<HTMLElement & AvatarProps>(null);
 
   useEffect(() => {
-    const { KlleonChat } = window;
-    const voiceCode = getLocaleCode(locale);
+    let cancelled = false;
 
-    KlleonChat.onStatusEvent((s) => {
-      setStatus(s);
-      if (s === "VIDEO_CAN_PLAY") {
-        start();
+    const initSdk = async () => {
+      if (cancelled) return;
+      const { KlleonChat } = window;
+
+      KlleonChat.onStatusEvent((s) => {
+        setStatus(s);
+        if (s === "VIDEO_CAN_PLAY") {
+          start();
+        }
+      });
+
+      await KlleonChat.init({
+        sdk_key: sdkKey,
+        avatar_id: avatarId,
+        log_level: "silent",
+        subtitle_code: getLocaleCode(locale),
+        voice_code: getLocaleCode(locale),
+      });
+
+      if (avatarContainerRef.current) {
+        avatarContainerRef.current.videoStyle = {
+          borderRadius: "24px",
+          objectFit: "cover",
+        };
       }
-    });
+    };
 
-    KlleonChat.init({
-      sdk_key: sdkKey,
-      avatar_id: avatarId,
-      log_level: "silent",
-      subtitle_code: voiceCode,
-      voice_code: voiceCode,
-    });
-
-    if (avatarContainerRef.current) {
-      avatarContainerRef.current.videoStyle = {
-        borderRadius: "24px",
-        objectFit: "cover",
-      };
+    if (window.KlleonChat) {
+      initSdk();
+    } else {
+      const onLoad = () => { if (window.KlleonChat) initSdk(); };
+      window.addEventListener("load", onLoad);
+      return () => { cancelled = true; window.removeEventListener("load", onLoad); };
     }
 
     return () => {
-      KlleonChat.destroy();
+      cancelled = true;
+      window.KlleonChat?.destroy();
     };
   }, []);
 

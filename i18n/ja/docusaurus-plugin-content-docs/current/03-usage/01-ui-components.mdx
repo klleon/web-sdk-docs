@@ -100,9 +100,9 @@ useEffect(() => {
 :::tip Web コンポーネントの属性指定方法
 **HTML で指定：**
 
-- `video-style='{"borderRadius": "12px"}'`
-- `is-show-count` (true)
-- `is-show-count="false"` (false)
+- `videostyle='{"borderRadius": "12px"}'`
+- `isshowcount` (true)
+- `isshowcount="false"` (false)
 
 **JavaScript で指定：**
 
@@ -114,7 +114,7 @@ useEffect(() => {
 - `ref.current.videoStyle = { borderRadius: "12px" }`
 - `ref.current.isShowCount = true`
 
-Web コンポーネントでは HTML では kebab-case、JavaScript では camelCase が使用されます。
+HTML 属性名は camelCase プロパティ名を小文字に変換したもの（`videoStyle` → `videostyle`）を使用します。JavaScript/React ではそのまま camelCase を使用します。
 :::
 
 ## UI コンポーネント統合例
@@ -172,7 +172,7 @@ export const chatStyle: CSSProperties = {
 ```
 
 ```tsx title="App.tsx (UIコンポーネントの配置例)"
-import { useEffect } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { wrapperStyle, avatarStyle, chatStyle } from "./styles";
 
 interface AvatarProps {

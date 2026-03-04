@@ -37,7 +37,7 @@ This example demonstrates how to implement a fully customized chat interface usi
 
 ### Add SDK Script
 
-Add the following script tag inside the `<head>` section of your `public/index.html`. Replace `{VERSION}` with your actual SDK version (e.g., 1.2.0).
+Add the following script tag inside the `<head>` section of your `public/index.html`. Replace `{VERSION}` with your actual SDK version (e.g., 1.3.0).
 
 ```html title="public/index.html"
 <script src="https://web.sdk.klleon.io/{VERSION}/klleon-chat.umd.js"></script>
@@ -82,7 +82,7 @@ Add the following script tag inside the `<head>` section of your `public/index.h
         display: flex;
         flex-direction: column;
         gap: 12px;
-        background: grey;
+        background: var(--klleon-color-text-muted);
         color: #fff;
         padding: 12px;
         border-radius: 12px;
@@ -130,8 +130,9 @@ Add the following script tag inside the `<head>` section of your `public/index.h
 </details>
 
 ```tsx title="App.tsx"
-import { ChatData, ResponseChatType, Status } from "@site/src/types/global";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+// Types are provided by KlleonSDK.d.ts. (See the TypeScript Guide)
+import type { ChatData, ResponseChatType, Status } from "./KlleonSDK";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 interface AvatarProps {
   videoStyle?: CSSProperties;
@@ -208,6 +209,10 @@ const App = () => {
             "The avatar has finished speaking. You can send a new message."
           );
         }
+      });
+
+      KlleonChat.onErrorEvent((error: { code: string; message: string }) => {
+        console.error("SDK Error Event:", error.code, error.message);
       });
 
       await KlleonChat.init({

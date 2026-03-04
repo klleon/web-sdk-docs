@@ -20,7 +20,7 @@ export const usage = {
         description:
           "내부 비디오 요소에 적용할 CSS 스타일 객체입니다.\n\n" +
           "HTML:\n" +
-          '<avatar-container video-style=\'{"borderRadius": "12px", "objectFit": "cover"}\'></avatar-container>\n\n' +
+          '<avatar-container videostyle=\'{"borderRadius": "12px", "objectFit": "cover"}\'></avatar-container>\n\n' +
           "React:\n" +
           "ref.current.videoStyle = { borderRadius: '12px', objectFit: 'cover' }\n\n" +
           "Vue:\n" +
@@ -124,11 +124,6 @@ export const usage = {
       {
         status: "SOCKET_FAILED",
         description: "웹소켓 서버 연결에 실패한 상태입니다.",
-      },
-      {
-        status: "STREAMING_CONNECTED",
-        description:
-          "미디어 스트리밍(WebRTC) 서버에 성공적으로 연결된 상태입니다.",
       },
       {
         status: "STREAMING_FAILED",
@@ -241,6 +236,82 @@ export const usage = {
         description:
           "음성 입력이 활성화되었을 때 발생합니다. 이 상태에서는 아바타가 `VIDEO_CAN_PLAY`가 아니어도 채팅 입력이 가능합니다.",
       },
+      {
+        chatType: "RATE_LIMIT",
+        description: "요청 속도 제한 초과",
+      },
+      {
+        chatType: "HANDOVER_START",
+        description: "핸드오버 시작",
+      },
+      {
+        chatType: "HANDOVER_SUCCESS",
+        description: "핸드오버 성공",
+      },
+      {
+        chatType: "HANDOVER_FAIL",
+        description: "핸드오버 실패",
+      },
+    ],
+    errorDataColumns: [
+      { header: "property", label: "속성명" },
+      { header: "type", label: "타입" },
+      { header: "description", label: "설명" },
+    ],
+    errorDataRows: [
+      {
+        property: "code",
+        type: "`ErrorCode`",
+        description: "에러 코드 (아래 ErrorCode 값 상세 참조)",
+      },
+      {
+        property: "message",
+        type: "`string`",
+        description: "에러에 대한 상세 메시지",
+      },
+    ],
+    errorCodeColumns: [
+      { header: "errorCode", label: "에러 코드" },
+      { header: "phase", label: "발생 단계" },
+      { header: "description", label: "설명" },
+    ],
+    errorCodeData: [
+      {
+        errorCode: "`SOCKET_FAILED`",
+        phase: "초기화",
+        description:
+          "초기화 과정에서 WebSocket 연결에 실패했습니다. 서버에 접속할 수 없거나 네트워크가 불안정한 경우 발생합니다.",
+      },
+      {
+        errorCode: "`STREAMING_FAILED`",
+        phase: "초기화",
+        description:
+          "초기화 과정에서 미디어 스트리밍(Agora) 연결에 실패했거나, 10초 내에 스트리밍 서버 응답이 없는 경우 발생합니다.",
+      },
+      {
+        errorCode: "`STREAMING_RECONNECT_FAILED`",
+        phase: "런타임",
+        description:
+          "Agora 스트리밍 연결이 끊어져 자동 재연결을 시도했으나 실패한 경우 발생합니다.",
+      },
+      {
+        errorCode: "`VIDEO_ELEMENT_NOT_FOUND`",
+        phase: "런타임",
+        description:
+          "스트리밍 연결 성공 후, `document.querySelector`로 `<avatar-container>` 요소를 탐색하지만 DOM에 존재하지 않는 경우 발생합니다. 조건부 렌더링(예: React에서 상태값에 따라 컴포넌트를 표시/숨김 처리)으로 인해 `<avatar-container>`가 `document.body`에 마운트되지 않은 경우가 대표적입니다. SDK 내부에서 300ms 간격으로 최대 3초간 폴링합니다.",
+      },
+      {
+        errorCode: "`SOCKET_DISCONNECTED_UNEXPECTEDLY`",
+        phase: "런타임",
+        description:
+          "아바타 영상 재생 중(`VIDEO_CAN_PLAY` 상태) WebSocket 연결이 예기치 않게 끊어졌을 때 발생합니다. 네트워크 중단 또는 서버 측 연결 해제가 원인입니다.",
+      },
+      {
+        errorCode: "`STREAMING_DISCONNECTED_UNEXPECTEDLY`",
+        phase: "런타임",
+        description:
+          "활성 세션 중 미디어 스트리밍 연결이 예기치 않게 끊어졌을 때 발생합니다. 네트워크 오류, 토큰 만료, IP/채널/UID 차단 등이 원인일 수 있습니다.",
+      },
     ],
   },
   en: {
@@ -265,7 +336,7 @@ export const usage = {
         description:
           "CSS style object to be applied to the internal video element.\n\n" +
           "HTML:\n" +
-          '<avatar-container video-style=\'{"borderRadius": "12px", "objectFit": "cover"}\'></avatar-container>\n\n' +
+          '<avatar-container videostyle=\'{"borderRadius": "12px", "objectFit": "cover"}\'></avatar-container>\n\n' +
           "React:\n" +
           "ref.current.videoStyle = { borderRadius: '12px', objectFit: 'cover' }\n\n" +
           "Vue:\n" +
@@ -370,11 +441,6 @@ export const usage = {
       {
         status: "SOCKET_FAILED",
         description: "Status when WebSocket server connection failed.",
-      },
-      {
-        status: "STREAMING_CONNECTED",
-        description:
-          "Status when successfully connected to the media streaming (WebRTC) server.",
       },
       {
         status: "STREAMING_FAILED",
@@ -489,6 +555,82 @@ export const usage = {
         description:
           "Occurs when voice input is activated. In this state, chat input is available even if the avatar is not in `VIDEO_CAN_PLAY` status.",
       },
+      {
+        chatType: "RATE_LIMIT",
+        description: "Request rate limit exceeded",
+      },
+      {
+        chatType: "HANDOVER_START",
+        description: "Handover started",
+      },
+      {
+        chatType: "HANDOVER_SUCCESS",
+        description: "Handover succeeded",
+      },
+      {
+        chatType: "HANDOVER_FAIL",
+        description: "Handover failed",
+      },
+    ],
+    errorDataColumns: [
+      { header: "property", label: "Property" },
+      { header: "type", label: "Type" },
+      { header: "description", label: "Description" },
+    ],
+    errorDataRows: [
+      {
+        property: "code",
+        type: "`ErrorCode`",
+        description: "Error code (see ErrorCode details below)",
+      },
+      {
+        property: "message",
+        type: "`string`",
+        description: "Detailed message about the error",
+      },
+    ],
+    errorCodeColumns: [
+      { header: "errorCode", label: "ErrorCode" },
+      { header: "phase", label: "Phase" },
+      { header: "description", label: "Description" },
+    ],
+    errorCodeData: [
+      {
+        errorCode: "`SOCKET_FAILED`",
+        phase: "Initialization",
+        description:
+          "WebSocket connection failed during initialization. Occurs when the server is unreachable or the network is unstable.",
+      },
+      {
+        errorCode: "`STREAMING_FAILED`",
+        phase: "Initialization",
+        description:
+          "Media streaming (Agora) connection failed during initialization, or the streaming server did not respond within 10 seconds.",
+      },
+      {
+        errorCode: "`STREAMING_RECONNECT_FAILED`",
+        phase: "Runtime",
+        description:
+          "Agora streaming connection was lost and the automatic reconnection attempt failed.",
+      },
+      {
+        errorCode: "`VIDEO_ELEMENT_NOT_FOUND`",
+        phase: "Runtime",
+        description:
+          "After a successful streaming connection, the SDK searches for the `<avatar-container>` element using `document.querySelector`, but it does not exist in the DOM. This typically occurs when conditional rendering (e.g., toggling component visibility based on state in React) prevents the `<avatar-container>` from being mounted in `document.body`. The SDK polls every 300ms for up to 3 seconds.",
+      },
+      {
+        errorCode: "`SOCKET_DISCONNECTED_UNEXPECTEDLY`",
+        phase: "Runtime",
+        description:
+          "The WebSocket connection was unexpectedly lost while the avatar video was playing (`VIDEO_CAN_PLAY` state). Caused by network interruption or server-side disconnection.",
+      },
+      {
+        errorCode: "`STREAMING_DISCONNECTED_UNEXPECTEDLY`",
+        phase: "Runtime",
+        description:
+          "The media streaming connection was unexpectedly lost during an active session. Possible causes include network errors, token expiration, or IP/channel/UID bans.",
+      },
     ],
   },
   ja: {
@@ -512,7 +654,7 @@ export const usage = {
         description:
           "内部ビデオ要素に適用するCSSスタイルオブジェクトです。\n\n" +
           "HTML:\n" +
-          '<avatar-container video-style=\'{"borderRadius": "12px", "objectFit": "cover"}\'></avatar-container>\n\n' +
+          '<avatar-container videostyle=\'{"borderRadius": "12px", "objectFit": "cover"}\'></avatar-container>\n\n' +
           "React:\n" +
           "ref.current.videoStyle = { borderRadius: '12px', objectFit: 'cover' }\n\n" +
           "Vue:\n" +
@@ -617,11 +759,6 @@ export const usage = {
       {
         status: "SOCKET_FAILED",
         description: "WebSocketサーバー接続に失敗した状態です。",
-      },
-      {
-        status: "STREAMING_CONNECTED",
-        description:
-          "メディアストリーミング(WebRTC)サーバーに正常に接続された状態です。",
       },
       {
         status: "STREAMING_FAILED",
@@ -735,6 +872,82 @@ export const usage = {
         chatType: "ACTIVATE_VOICE",
         description:
           "音声入力が有効化された時に発生します。この状態ではアバターが`VIDEO_CAN_PLAY`でなくてもチャット入力が可能です。",
+      },
+      {
+        chatType: "RATE_LIMIT",
+        description: "リクエストレート制限超過",
+      },
+      {
+        chatType: "HANDOVER_START",
+        description: "ハンドオーバー開始",
+      },
+      {
+        chatType: "HANDOVER_SUCCESS",
+        description: "ハンドオーバー成功",
+      },
+      {
+        chatType: "HANDOVER_FAIL",
+        description: "ハンドオーバー失敗",
+      },
+    ],
+    errorDataColumns: [
+      { header: "property", label: "プロパティ名" },
+      { header: "type", label: "タイプ" },
+      { header: "description", label: "説明" },
+    ],
+    errorDataRows: [
+      {
+        property: "code",
+        type: "`ErrorCode`",
+        description: "エラーコード（下記の ErrorCode 値の詳細を参照）",
+      },
+      {
+        property: "message",
+        type: "`string`",
+        description: "エラーに関する詳細メッセージ",
+      },
+    ],
+    errorCodeColumns: [
+      { header: "errorCode", label: "エラーコード" },
+      { header: "phase", label: "発生フェーズ" },
+      { header: "description", label: "説明" },
+    ],
+    errorCodeData: [
+      {
+        errorCode: "`SOCKET_FAILED`",
+        phase: "初期化",
+        description:
+          "初期化中に WebSocket 接続に失敗しました。サーバーに接続できないか、ネットワークが不安定な場合に発生します。",
+      },
+      {
+        errorCode: "`STREAMING_FAILED`",
+        phase: "初期化",
+        description:
+          "初期化中にメディアストリーミング（Agora）接続に失敗したか、10秒以内にストリーミングサーバーからの応答がない場合に発生します。",
+      },
+      {
+        errorCode: "`STREAMING_RECONNECT_FAILED`",
+        phase: "ランタイム",
+        description:
+          "Agora ストリーミング接続が切断され、自動再接続を試みましたが失敗した場合に発生します。",
+      },
+      {
+        errorCode: "`VIDEO_ELEMENT_NOT_FOUND`",
+        phase: "ランタイム",
+        description:
+          "ストリーミング接続成功後、`document.querySelector` で `<avatar-container>` 要素を検索しますが、DOM に存在しない場合に発生します。条件付きレンダリング（例：React で状態値に応じてコンポーネントの表示/非表示を切り替える場合）により、`<avatar-container>` が `document.body` にマウントされていないケースが代表的です。SDK 内部で 300ms 間隔で最大3秒間ポーリングします。",
+      },
+      {
+        errorCode: "`SOCKET_DISCONNECTED_UNEXPECTEDLY`",
+        phase: "ランタイム",
+        description:
+          "アバター映像再生中（`VIDEO_CAN_PLAY` 状態）に WebSocket 接続が予期せず切断された場合に発生します。ネットワーク中断またはサーバー側の切断が原因です。",
+      },
+      {
+        errorCode: "`STREAMING_DISCONNECTED_UNEXPECTEDLY`",
+        phase: "ランタイム",
+        description:
+          "アクティブセッション中にメディアストリーミング接続が予期せず切断された場合に発生します。ネットワークエラー、トークンの有効期限切れ、IP/チャンネル/UID のブロックなどが原因の可能性があります。",
       },
     ],
   },

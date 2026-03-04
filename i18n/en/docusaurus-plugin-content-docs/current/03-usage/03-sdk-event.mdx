@@ -12,14 +12,14 @@ import { usage } from "@site/src/data/usage";
 import Head from "@docusaurus/Head";
 
 <Head>
-  <title>{`Klleon Chat SDK Event Handling - onChatEvent, onStatusEvent Usage Guide`}</title>
+  <title>{`Klleon Chat SDK Event Handling - onChatEvent, onStatusEvent, onErrorEvent Usage Guide`}</title>
   <meta
     name="description"
-    content="Learn how to handle avatar state changes and chat messages using onChatEvent and onStatusEvent in the Klleon Chat SDK. Detailed flow of VIDEO_CAN_PLAY, chat_type, and status included."
+    content="Learn how to handle avatar state changes, chat messages, and errors using onChatEvent, onStatusEvent, and onErrorEvent in the Klleon Chat SDK. Includes detailed ErrorCode descriptions and error event flow."
   />
   <meta
     name="keywords"
-    content="Klleon Chat SDK, Event Handling, onChatEvent, onStatusEvent, Status Event, VIDEO_CAN_PLAY, Chat Events, chat_type, Status Flow, Digital Human SDK, Klleon SDK, Realtime Chat Event, JavaScript Event Listener"
+    content="Klleon Chat SDK, Event Handling, onChatEvent, onStatusEvent, Status Event, VIDEO_CAN_PLAY, Chat Events, chat_type, Status Flow, Digital Human SDK, Klleon SDK, Realtime Chat Event, JavaScript Event Listener, onErrorEvent, Error Event"
   />
 </Head>
 
@@ -136,7 +136,7 @@ window.KlleonChat.onStatusEvent(handleSdkStatus);
 :::caution SDK Method Usage Prerequisite
 Most SDK methods (e.g., sending messages, STT functions) must be called only when the avatar is fully connected and in a **`VIDEO_CAN_PLAY`** state. This state is communicated through `onStatusEvent`. Calling methods before this state may lead to unexpected behavior.
 
-`KlleonChat.init()` and event listener methods (`onChatEvent`, `onStatusEvent`) are exceptions to this rule.
+`KlleonChat.init()` and event listener methods (`onChatEvent`, `onStatusEvent`, `onErrorEvent`) are exceptions to this rule.
 :::
 
 #### Status Event Arguments
@@ -162,9 +162,8 @@ flowchart TD
     B -->|fail| C[CONNECTING_FAILED]
     B -->|success| D[SOCKET_CONNECTED]
     D -->|fail| I[SOCKET_FAILED]
-    D -->|success| E[STREAMING_CONNECTED]
-    E -->|fail| J[STREAMING_FAILED]
-    E -->|success| H[CONNECTED_FINISH]
+    D -->|success| H[CONNECTED_FINISH]
+    D -->|fail| J[STREAMING_FAILED]
     H --> F[VIDEO_LOAD]
     F --> G[VIDEO_CAN_PLAY]
 
@@ -172,10 +171,61 @@ flowchart TD
     classDef success fill:#d3f9d8,stroke:#3adb76,stroke-width:2px,color:#000;
     classDef failure fill:#ffe3e3,stroke:#ff6b6b,stroke-width:2px,color:#000;
 
-    class D,E,H,F,G success;
+    class D,H,F,G success;
     class C,I,J failure;
 ```
 
+---
+
+### `KlleonChat.onErrorEvent(callback)`
+
+Registers a callback function to receive errors occurring within the SDK. This allows you to detect and handle various error scenarios such as network failures, media playback issues, and more.
+
+- **callback** (`(error: ErrorData) => void`, required): A function that receives an `ErrorData` object (`{ code: ErrorCode; message: string }`).
+
+```javascript
+function handleError(error) {
+  console.error("SDK Error:", error.code, error.message);
+}
+
+window.KlleonChat.onErrorEvent(handleError);
+```
+
+#### `ErrorCode` Details
+
+Error codes are categorized into **Initialization phase** (occurs during `init()` call) and **Runtime phase** (occurs after `VIDEO_CAN_PLAY`).
+
+<Table columns={usage.en.errorCodeColumns} data={usage.en.errorCodeData} />
+
+#### Error Event Flow
+
+```mermaid
+flowchart TD
+    subgraph INIT["Initialization Phase"]
+        A["KlleonChat.init()"] --> B{WebSocket Connection}
+        B -->|Fail| C["SOCKET_FAILED"]
+        B -->|Success| D{Streaming Connection}
+        D -->|"Fail / Timeout(10s)"| E["STREAMING_FAILED"]
+        D -->|Success| F["VIDEO_CAN_PLAY ✓"]
+    end
+
+    subgraph RUNTIME["Runtime Phase"]
+        F --> G{Connection Monitoring}
+        G -->|"avatar-container not found"| H["VIDEO_ELEMENT_NOT_FOUND"]
+        G -->|"WebSocket error"| I["SOCKET_DISCONNECTED_UNEXPECTEDLY"]
+        G -->|"Streaming reconnect failed"| J["STREAMING_RECONNECT_FAILED"]
+        G -->|"Streaming disconnected"| K["STREAMING_DISCONNECTED_UNEXPECTEDLY"]
+    end
+
+    classDef init fill:#ffe3e3,stroke:#ff6b6b,stroke-width:2px,color:#000;
+    classDef runtime fill:#fff3bf,stroke:#ffc107,stroke-width:2px,color:#000;
+    classDef success fill:#d3f9d8,stroke:#3adb76,stroke-width:2px,color:#000;
+
+    class C,E init;
+    class H,I,J,K runtime;
+    class F success;
+```
+
 :::info Re-registering Callbacks
-If `onChatEvent` or `onStatusEvent` is called multiple times for the same event type, only the most recently registered callback remains active. Older callbacks are automatically removed. There’s no explicit `off` method.
+If `onChatEvent`, `onStatusEvent`, or `onErrorEvent` is called multiple times for the same event type, only the most recently registered callback remains active. Older callbacks are automatically removed. There’s no explicit `off` method.
 :::

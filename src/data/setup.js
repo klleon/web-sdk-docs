@@ -50,7 +50,7 @@ export const setup = {
         required: "X",
         default: "`true`",
         description:
-          "`true`로 설정 시, 마이크 권한 요청 없이 음성 입력 기능 시도합니다.\n(브라우저 정책에 따라 동작이 다를 수 있습니다.)",
+          "`true`로 설정 시, 마이크 연결을 시도합니다. 브라우저에서 마이크 권한을 요청합니다.",
       },
       {
         parameter: "log_level",
@@ -102,7 +102,7 @@ export const setup = {
         parameter: "subtitle_code",
         type: "string",
         required: "X",
-        default: "최초 연결 값",
+        default: "`ko_kr`",
         description:
           "아바타 발화 자막 언어 설정입니다.\n지원 코드: `ko_kr` (한국어), `en_us` (영어), `ja_jp` (일본어), `id_id` (인도네시아어) 등",
       },
@@ -110,14 +110,14 @@ export const setup = {
         parameter: "voice_code",
         type: "string",
         required: "X",
-        default: "최초 연결 값",
+        default: "`ko_kr`",
         description: "아바타 발화 음성 언어 설정입니다.",
       },
       {
         parameter: "voice_tts_speech_speed",
         type: "number",
         required: "X",
-        default: "최초 연결 값",
+        default: "`1.0`",
         description: "아바타 발화 속도 조절 기능입니다.\n범위: 0.5 ~ 2.0",
       },
     ],
@@ -173,7 +173,7 @@ export const setup = {
         required: "X",
         default: "`true`",
         description:
-          "When set to `true`, attempts voice input without requesting microphone permission.\n(Behavior may vary depending on browser policy.)",
+          "When set to `true`, attempts to connect the microphone. The browser will prompt for microphone permission.",
       },
       {
         parameter: "log_level",
@@ -225,7 +225,7 @@ export const setup = {
         parameter: "subtitle_code",
         type: "string",
         required: "X",
-        default: "Initial connection value",
+        default: "`ko_kr`",
         description:
           "Avatar speech subtitle language setting.\nSupported codes: `ko_kr` (Korean), `en_us` (English), `ja_jp` (Japanese), `id_id` (Indonesian), etc.",
       },
@@ -233,14 +233,14 @@ export const setup = {
         parameter: "voice_code",
         type: "string",
         required: "X",
-        default: "Initial connection value",
+        default: "`ko_kr`",
         description: "Avatar speech voice language setting.",
       },
       {
         parameter: "voice_tts_speech_speed",
         type: "number",
         required: "X",
-        default: "Initial connection value",
+        default: "`1.0`",
         description: "Avatar speech speed control feature.\nRange: 0.5 ~ 2.0",
       },
     ],
@@ -296,7 +296,7 @@ export const setup = {
         required: "X",
         default: "`true`",
         description:
-          "`true`に設定すると、マイク権限の要求なしに音声入力機能を試みます。\n(ブラウザのポリシーによって動作が異なる場合があります。)",
+          "`true`に設定すると、マイク接続を試みます。ブラウザがマイク権限を要求します。",
       },
       {
         parameter: "log_level",
@@ -348,7 +348,7 @@ export const setup = {
         parameter: "subtitle_code",
         type: "string",
         required: "X",
-        default: "初回接続値",
+        default: "`ko_kr`",
         description:
           "アバター発話字幕言語設定です。\nサポートコード: `ko_kr` (韓国語), `en_us` (英語), `ja_jp` (日本語), `id_id` (インドネシア語) など",
       },
@@ -356,14 +356,14 @@ export const setup = {
         parameter: "voice_code",
         type: "string",
         required: "X",
-        default: "初回接続値",
+        default: "`ko_kr`",
         description: "アバター発話音声言語設定です。",
       },
       {
         parameter: "voice_tts_speech_speed",
         type: "number",
         required: "X",
-        default: "初回接続値",
+        default: "`1.0`",
         description: "アバター発話速度調整機能です。\n範囲: 0.5 ~ 2.0",
       },
     ],

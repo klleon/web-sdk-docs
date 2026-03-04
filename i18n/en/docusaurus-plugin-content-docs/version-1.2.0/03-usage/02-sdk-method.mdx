@@ -1,0 +1,438 @@
+---
+id: sdk-method
+sidebar_position: 4
+title: SDK Methods
+---
+
+import { Table } from "@site/src/components/table/Table";
+import { setup } from "@site/src/data/setup";
+import Head from "@docusaurus/Head";
+
+<Head>
+  <title>{`Klleon Chat SDK Methods Overview - init, sendTextMessage, STT, Echo, Avatar Control`}</title>
+  <meta
+    name="description"
+    content="Comprehensive guide to using Klleon Chat SDK methods. Learn how to use init, destroy, sendTextMessage, startStt, echo, changeAvatar and more to build interactive avatar chat applications."
+  />
+  <meta
+    name="keywords"
+    content="Klleon Chat SDK, init, sendTextMessage, startStt, endStt, echo, startAudioEcho, changeAvatar, Web Avatar Control, STT Input, Text Message Sending, Avatar Switching, Message Reset, JavaScript AI Chatbot, Klleon SDK"
+  />
+</Head>
+
+# SDK Methods
+
+Klleon Chat SDK provides a variety of methods for interactive communication within your web application. This guide covers core functionalities from SDK initialization to message sending and avatar control.
+
+## SDK Lifecycle
+
+Properly managing the SDK's lifecycle is crucial for preventing resource leaks and ensuring application stability.
+
+### `KlleonChat.init(options)`
+
+Initializes the SDK and prepares the connection to the server. This method should be called once when the application loads.
+
+**Initialization Options (`options`):**
+
+<Table columns={setup.en.initOptionColumns} data={setup.en.initOptionData} />
+
+:::caution Best Practice
+It is recommended to call `KlleonChat.init()` only once per SDK instance. The SDK includes internal logic to prevent duplicate initialization, so even if called multiple times, only the first call will take effect. For optimal performance and clear code management, call `init()` only once during application load.
+:::
+
+### `KlleonChat.destroy()`
+
+Cleans up all resources used by the SDK (socket connections, WebRTC connections, event listeners, etc.) and fully shuts down the SDK.
+
+**Usage Example (Initialization and Cleanup):**
+
+```tsx title="App.tsx (SDK Lifecycle Management)"
+import { useEffect } from "react";
+
+const App = () => {
+  useEffect(() => {
+    const init = async () => {
+      const { KlleonChat } = window;
+
+      await KlleonChat.init({
+        sdk_key: "YOUR_SDK_KEY",
+        avatar_id: "YOUR_AVATAR_ID",
+        subtitle_code: "en_us",
+        voice_code: "en_us",
+        voice_tts_speech_speed: 1.0,
+        enable_microphone: true,
+        log_level: "debug",
+        custom_id: "YOUR_CUSTOM_ID",
+        user_key: "YOUR_USER_KEY",
+      });
+    };
+
+    return () => {
+      // Clean up all KlleonChat SDK resources and shut down.
+      window.KlleonChat.destroy();
+    };
+  }, []);
+  return (
+    <div>
+      <avatar-container />
+      <chat-container />
+    </div>
+  );
+};
+
+export default App;
+```
+
+## Sending Messages
+
+### `KlleonChat.sendTextMessage(text)`
+
+Sends a user-entered text message to the avatar.
+
+- **text** (string, required): The text message to send to the avatar.
+
+**Usage Example:**
+
+```tsx title="App.tsx (sendTextMessage)"
+import { useRef } from "react";
+
+const App = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSend = () => {
+    const text = inputRef.current?.value.trim();
+    if (text) {
+      window.KlleonChat.sendTextMessage(text);
+      inputRef.current.value = "";
+    }
+  };
+  return (
+    <div>
+      <avatar-container />
+      <chat-container />
+      <input ref={inputRef} type="text" placeholder="Enter a message" />
+      <button onClick={handleSend}>Send</button>
+    </div>
+  );
+};
+```
+
+## Voice Input (STT: Speech-to-Text)
+
+A feature that converts user voice input to text and sends it to the avatar. Use `startStt()` to begin voice input and `endStt()` to finish and send.
+
+:::info Microphone Permission
+To use voice conversation features, browser microphone permission is required. Setting `enable_microphone: true` (default) in `init()` will prompt the SDK to request microphone access.
+:::
+
+### `KlleonChat.startStt()` / `KlleonChat.endStt()`
+
+- **`KlleonChat.startStt()`**: Begins collecting voice data through the microphone.
+- **`KlleonChat.endStt()`**: Stops the ongoing voice data collection, converts the collected audio to text, and sends it as a message to the avatar.
+
+**Usage Example:**
+
+```tsx title="App.tsx (startStt, endStt)"
+import { useRef } from "react";
+
+const App = () => {
+  const recordButtonRef = useRef<HTMLButtonElement>(null);
+  const isRecording = useRef(false);
+
+  const handleRecord = () => {
+    if (!isRecording.current) {
+      window.KlleonChat.startStt();
+      isRecording.current = true;
+    }
+    if (isRecording.current) {
+      window.KlleonChat.endStt();
+      isRecording.current = false;
+    }
+  };
+
+  return (
+    <div>
+      <avatar-container />
+      <button ref={recordButtonRef} onClick={handleRecord}>
+        Start Recording
+      </button>
+    </div>
+  );
+};
+
+export default App;
+```
+
+## Avatar Speech Control
+
+### `KlleonChat.cancelStt()`
+
+Cancels an ongoing voice input (after calling `startStt()`). The cancelled voice data will not be sent to the avatar, and the system returns to a state ready for new voice input. Use this when the user wants to cancel their voice input mid-recording.
+
+**Usage Example:**
+
+```tsx title="App.tsx (cancelStt)"
+import { useRef } from "react";
+
+const App = () => {
+  const recordButtonRef = useRef<HTMLButtonElement>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const isRecording = useRef(false);
+
+  const handleRecord = () => {
+    if (!isRecording.current) {
+      window.KlleonChat.startStt();
+      isRecording.current = true;
+    }
+    if (isRecording.current) {
+      window.KlleonChat.endStt();
+      isRecording.current = false;
+    }
+  };
+
+  const handleCancel = () => {
+    window.KlleonChat.cancelStt();
+    isRecording.current = false;
+  };
+
+  return (
+    <div>
+      <avatar-container />
+      <button ref={recordButtonRef} onClick={handleRecord}>
+        Start Recording
+      </button>
+      <button ref={cancelButtonRef} onClick={handleCancel}>
+        Cancel Recording
+      </button>
+    </div>
+  );
+};
+
+export default App;
+```
+
+### `KlleonChat.stopSpeech()`
+
+Immediately stops the avatar's current speech (TTS) output.
+
+**Usage Example:**
+
+```tsx title="App.tsx (stopSpeech)"
+import { useRef } from "react";
+
+const App = () => {
+  const recordButtonRef = useRef<HTMLButtonElement>(null);
+  const stopSpeechButtonRef = useRef<HTMLButtonElement>(null);
+  const isRecording = useRef(false);
+
+  const handleRecord = () => {
+    if (!isRecording.current) {
+      window.KlleonChat.startStt();
+      isRecording.current = true;
+    }
+    if (isRecording.current) {
+      window.KlleonChat.endStt();
+      isRecording.current = false;
+    }
+  };
+
+  const handleStopSpeech = () => {
+    window.KlleonChat.stopSpeech();
+  };
+
+  return (
+    <div>
+      <avatar-container />
+      <button ref={recordButtonRef} onClick={handleRecord}>
+        Start Recording
+      </button>
+      <button ref={stopSpeechButtonRef} onClick={handleStopSpeech}>
+        Stop Speech
+      </button>
+    </div>
+  );
+};
+
+export default App;
+```
+
+## Echo Feature
+
+### `KlleonChat.echo(text)`
+
+Requests the avatar to speak the provided `text` string directly via TTS.
+
+- **text** (string, required): The text message for the avatar to speak.
+
+**Usage Example:**
+
+```tsx title="App.tsx (echo)"
+import { useRef } from "react";
+
+const App = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSend = () => {
+    const text = inputRef.current?.value.trim();
+    if (text) {
+      window.KlleonChat.echo(text);
+      inputRef.current.value = "";
+    }
+  };
+  return (
+    <div>
+      <avatar-container />
+      <chat-container />
+      <input ref={inputRef} type="text" placeholder="Enter a message" />
+      <button onClick={handleSend}>Send</button>
+    </div>
+  );
+};
+```
+
+### `KlleonChat.startAudioEcho(audio)` / `KlleonChat.endAudioEcho()`
+
+- **`KlleonChat.startAudioEcho(audio)`**: Sends Base64-encoded `audio` string data to the server, requesting the avatar to speak the audio. You must explicitly call `endAudioEcho()` to terminate the session.
+  - `audio` (string, required): Base64-encoded audio data string. (0.1MB limit, must be valid Base64)
+- **`KlleonChat.endAudioEcho()`**: Terminates the audio echo session and sends a signal to the server for smooth video transition.
+
+**Usage Example:**
+
+```tsx title="App.tsx (startAudioEcho, endAudioEcho)"
+import { useRef } from "react";
+
+const App = () => {
+  const audioInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleStartAudioEcho = () => {
+    const audioData = audioInputRef.current?.value.trim();
+    if (audioData) {
+      try {
+        window.KlleonChat.startAudioEcho(audioData);
+        console.log("Audio echo started.");
+
+        // Call endAudioEcho immediately after sending audio (recommended)
+        setTimeout(() => {
+          window.KlleonChat.endAudioEcho();
+          console.log("Audio echo ended.");
+        }, 100);
+      } catch (error) {
+        console.error("Failed to start audio echo:", error);
+      }
+    }
+  };
+
+  const handleMultipleAudioEcho = async () => {
+    const audioList = [
+      "base64_audio_data_1",
+      "base64_audio_data_2",
+      "base64_audio_data_3",
+    ];
+
+    try {
+      // Send multiple audio segments consecutively
+      for (const audio of audioList) {
+        await window.KlleonChat.startAudioEcho(audio);
+        console.log("Audio sent:", audio);
+      }
+
+      // Call endAudioEcho only once after the last audio segment
+      window.KlleonChat.endAudioEcho();
+      console.log("All audio echo ended.");
+    } catch (error) {
+      console.error("Audio echo processing failed:", error);
+    }
+  };
+
+  return (
+    <div>
+      <avatar-container />
+      <chat-container />
+      <textarea
+        ref={audioInputRef}
+        placeholder="Enter Base64 audio data"
+        rows={4}
+        cols={50}
+      />
+      <button onClick={handleStartAudioEcho}>Single Audio Echo</button>
+      <button onClick={handleMultipleAudioEcho}>Multiple Audio Echo</button>
+    </div>
+  );
+};
+
+export default App;
+```
+
+:::info Role of End Audio Echo
+`endAudioEcho()` is a signal for smooth video transition after audio playback is complete.
+
+**If not called:**
+
+- Abrupt video transitions may occur
+- In some video modes, the avatar may not return to the idle video
+
+**Recommended usage:**
+
+- Call immediately after sending audio (no need to wait for playback to finish)
+- When sending multiple audio segments consecutively, call only once after the last segment
+:::
+
+## Changing Avatar
+
+### `KlleonChat.changeAvatar(option)`
+
+Terminates the current SDK session and starts a new session with a new avatar using the specified `option`.
+
+**ChangeAvatarOption:**
+
+<Table
+  columns={setup.en.changeAvatarOptionColumns}
+  data={setup.en.changeAvatarOptionData}
+/>
+
+**Usage Example:**
+
+```tsx title="App.tsx (changeAvatar)"
+const App = () => {
+  const handleChangeAvatar = () => {
+    window.KlleonChat.changeAvatar({
+      avatar_id: "YOUR_AVATAR_ID",
+      subtitle_code: "en_us",
+      voice_code: "en_us",
+      voice_tts_speech_speed: 1.0,
+    });
+  };
+
+  return (
+    <div>
+      <avatar-container />
+      <chat-container />
+      <button onClick={handleChangeAvatar}>Change Avatar</button>
+    </div>
+  );
+};
+```
+
+## Message List Management
+
+### `KlleonChat.clearMessageList()`
+
+Clears the SDK's internal message list state. Primarily used with SDK-provided UI web components like `<chat-container>` to clear displayed messages from the screen. This method does not delete conversation logs from the server — it only resets the client-side UI message array.
+
+**Usage Example:**
+
+```tsx title="App.tsx (clearMessageList)"
+const App = () => {
+  const handleClearMessageList = () => {
+    window.KlleonChat.clearMessageList();
+  };
+
+  return (
+    <div>
+      <avatar-container />
+      <chat-container />
+      <button onClick={handleClearMessageList}>Clear Message List</button>
+    </div>
+  );
+};
+```

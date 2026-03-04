@@ -88,11 +88,11 @@ export default App;
 
 ## メッセージ送信
 
-### `KlleonChat.sendTextMessage(text)`
+### `KlleonChat.sendTextMessage(message)`
 
 ユーザーが入力したテキストメッセージをアバターに送信します。
 
-- **text** (string, 必須)：送信するメッセージテキスト。
+- **message** (string, 必須)：送信するメッセージテキスト。
 
 **使用例：**
 
@@ -118,6 +118,8 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```
 
 ## 音声入力（STT: Speech-to-Text）
@@ -158,6 +160,8 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```
 
 ## アバター発話制御
@@ -188,11 +192,11 @@ const handleStopSpeech = () => {
 
 ## エコー機能
 
-### `KlleonChat.echo(text)`
+### `KlleonChat.echo(message)`
 
-指定された `text` 文字列をアバターがそのまま発話（TTS）します。
+指定された `message` 文字列をアバターがそのまま発話（TTS）します。
 
-- **text** (string, 必須)：アバターが話すテキストメッセージです。
+- **message** (string, 必須)：アバターが話すテキストメッセージです。
 
 **使用例：**
 
@@ -218,6 +222,8 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```
 
 ### `KlleonChat.startAudioEcho(audio)` / `KlleonChat.endAudioEcho()`
@@ -260,7 +266,7 @@ const App = () => {
 
     try {
       for (const audio of audioList) {
-        await window.KlleonChat.startAudioEcho(audio);
+        window.KlleonChat.startAudioEcho(audio);
         console.log("オーディオ送信済み:", audio);
       }
 
@@ -286,6 +292,8 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```
 
 :::info End Audio Echo の役割
@@ -336,6 +344,8 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```
 
 ## メッセージ一覧の管理
@@ -361,4 +371,6 @@ const App = () => {
     </div>
   );
 };
+
+export default App;
 ```

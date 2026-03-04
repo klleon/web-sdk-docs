@@ -24,7 +24,7 @@ const config: Config = {
 
   scripts: [
     {
-      src: "https://web.sdk.klleon.io/1.2.0/klleon-chat.umd.js",
+      src: "https://web.sdk.klleon.io/1.3.0/klleon-chat.umd.js",
       async: true,
     },
   ],
@@ -53,8 +53,18 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
-          editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: '1.3.0',
+              path: '',
+              banner: 'none',
+            },
+            '1.2.0': {
+              label: '1.2.0',
+              banner: 'unmaintained',
+            },
+          },
         },
         blog: false,
         theme: {
@@ -155,39 +165,8 @@ const config: Config = {
       },
       items: [
         {
-          type: "html",
-          position: "left",
-          value: `
-            <span style="
-              display: inline-flex;
-              align-items: center;
-              gap: 8px;
-              font-size: 1.15em;
-              font-weight: 600;
-              color: #24292f;
-              padding: 0;
-              box-shadow: none;
-            ">
-              1.2.0
-              <span style="
-                display: inline-block;
-                margin-left: 4px;
-                background: none;
-                color: #3579CC;
-                border: 1.5px solid #3579CC;
-                border-radius: 10px;
-                font-size: 0.5em;
-                font-weight: 700;
-                padding: 3px 5px;
-                letter-spacing: 0.5px;
-                line-height: 1.2;
-                box-shadow: none;
-                vertical-align: middle;
-              ">
-                Latest
-              </span>
-            </span>
-        `,
+          type: 'docsVersionDropdown',
+          position: 'left',
         },
         {
           type: "docSidebar",
